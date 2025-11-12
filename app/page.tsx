@@ -34,24 +34,25 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="w-full max-w-3xl">
-        {/* Logo Civipedia à la place de la phrase */}
+      <div className="w-full max-w-4xl">
+        {/* Logo Civipedia avec dimensions exactes */}
         <div className="flex justify-center items-center mb-12">
           <div className="w-40 h-40 relative">
             <Image
               src="/civipedia-logo.png"
               alt="Civipedia Logo"
-              width={160}
-              height={160}
+              width={1802}
+              height={488}
               className="rounded-2xl"
               priority
+              quality={100}
             />
           </div>
         </div>
 
-        {/* Zone de recherche principale */}
+        {/* Encadré principal unifié */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
-          <form onSubmit={handleSearch} className="space-y-6">
+          <form onSubmit={handleSearch} className="mb-8">
             <div className="flex space-x-4">
               <input
                 type="text"
@@ -70,20 +71,20 @@ export default function Home() {
             </div>
           </form>
 
-          {/* Zone de réponse */}
           {response && (
-            <div className="mt-8 p-6 bg-white rounded-2xl shadow-md border border-gray-100">
+            <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
               <h2 className="font-semibold text-gray-900 text-lg mb-3">Réponse :</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{response}</p>
             </div>
           )}
-        </div>
 
-        {/* Suggestions ou informations supplémentaires */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-sm">
-            💡 Exemple : "Qu'est-ce que la démocratie participative ?"
-          </p>
+          {!response && (
+            <div className="text-center pt-6 border-t border-gray-200">
+              <p className="text-gray-500 text-sm">
+                💡 Exemple : "Qu'est-ce que la démocratie participative ?"
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </main>
