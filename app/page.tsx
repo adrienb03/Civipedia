@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from 'next/image';
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -32,35 +33,60 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
-      <div className="w-full max-w-2xl bg-white shadow-md rounded-2xl p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">Civipedia 🔍</h1>
-
-        <form onSubmit={handleSearch} className="flex space-x-3">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Pose ta question ici..."
-            className="flex-grow p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {loading ? "Recherche..." : "Rechercher"}
-          </button>
-        </form>
-
-        {response && (
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-            <h2 className="font-semibold text-lg mb-2">Réponse :</h2>
-            <p>{response}</p>
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="w-full max-w-4xl">
+        {/* Logo Civipedia avec dimensions exactes */}
+        <div className="flex justify-center items-center mb-12">
+          <div className="w-40 h-40 relative">
+            <Image
+              src="/civipedia-logo.png"
+              alt="Civipedia Logo"
+              width={1802}
+              height={488}
+              className="rounded-lg"
+              priority
+              quality={100}
+            />
           </div>
-        )}
+        </div>
+
+        {/* Encadré principal unifié */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
+          <form onSubmit={handleSearch} className="mb-8">
+            <div className="flex space-x-4">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Posez n'importe quelle question ou mentionnez un Espace"
+                className="flex-grow p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:transform-none transition-all duration-200 font-semibold text-lg"
+              >
+                {loading ? "🔍" : "Rechercher"}
+              </button>
+            </div>
+          </form>
+
+          {response && (
+            <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
+              <h2 className="font-semibold text-gray-900 text-lg mb-3">Réponse :</h2>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{response}</p>
+            </div>
+          )}
+
+          {!response && (
+            <div className="text-center pt-6 border-t border-gray-200">
+              <p className="text-gray-500 text-sm">
+                💡 Exemple : "Qu'est-ce que la démocratie participative ?"
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
 }
-
