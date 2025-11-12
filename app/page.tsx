@@ -64,7 +64,7 @@ export default function Home() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Posez n'importe quelle question ou mentionnez un Espace"
-                className="flex-grow p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                className="flex-grow p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
               <button
                 type="submit"
@@ -78,7 +78,7 @@ export default function Home() {
 
           {/* Section des outils en bas */}
           <div className="flex justify-center space-x-6 pt-4 border-t border-gray-200">
-            {/* Bouton Modèles DIA (Logo pensée profonde) */}
+            {/* Bouton Modèles DIA */}
             <button 
               onClick={() => handleToolClick("Modèles DIA")}
               className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center"
@@ -92,7 +92,7 @@ export default function Home() {
               <span className="text-xs">Modèles</span>
             </button>
 
-            {/* Bouton Sources (Logo planète) */}
+            {/* Bouton Sources */}
             <button 
               onClick={() => handleToolClick("Sources")}
               className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center"
@@ -107,7 +107,7 @@ export default function Home() {
               <span className="text-xs">Sources</span>
             </button>
 
-            {/* Bouton Ajouter fichier (Logo trombone) */}
+            {/* Bouton Ajouter fichier */}
             <button 
               onClick={() => handleToolClick("Ajouter fichier")}
               className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center"
@@ -121,7 +121,7 @@ export default function Home() {
               <span className="text-xs">Fichier</span>
             </button>
 
-            {/* Bouton Dicter (Logo micro) */}
+            {/* Bouton Dicter */}
             <button 
               onClick={() => handleToolClick("Dicter")}
               className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center"
