@@ -36,13 +36,13 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="w-full max-w-4xl">
         {/* Logo Civipedia avec dimensions exactes */}
-        <div className="flex justify-center items-center -mb-24">
+        <div className="flex justify-center items-center -mb-16">
           <div className="w-40 h-40 relative">
             <Image
               src="/civipedia-logo.png"
               alt="Civipedia Logo"
-              width={1536}
-              height={1024}
+              width={1812}
+              height={474}
               className="rounded-lg"
               priority
               quality={100}
