@@ -36,8 +36,8 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="w-full max-w-4xl">
         {/* Logo Civipedia avec dimensions exactes */}
-        <div className="flex justify-center items-center -mb-16">
-          <div className="w-40 h-40 relative">
+        <div className="flex justify-center items-center -mb-4">
+          <div className="w-50 h-50 relative">
             <Image
               src="/civipedia-logo.png"
               alt="Civipedia Logo"
