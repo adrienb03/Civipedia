@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   // États pour gérer la requête, la réponse et le chargement
@@ -43,6 +44,16 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Bouton d'inscription en haut à gauche */}
+      <div className="absolute top-6 left-6">
+        <Link 
+          href="/signup"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-sm"
+        >
+          Inscription
+        </Link>
+      </div>
+
       <div className="w-full max-w-4xl">
         {/* Section d'affichage du logo Civipedia */}
         <div className="flex justify-center items-center -mb-4">
