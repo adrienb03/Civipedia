@@ -41,8 +41,8 @@ export default function Home() {
             <Image
               src="/civipedia-logo.png"
               alt="Civipedia Logo"
-              width={1802}
-              height={488}
+              width={1536}
+              height={1024}
               className="rounded-lg"
               priority
               quality={100}
