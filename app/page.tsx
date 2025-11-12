@@ -43,7 +43,7 @@ export default function Home() {
               alt="Civipedia Logo"
               width={1802}
               height={488}
-              className="rounded-2xl"
+              className="rounded-lg"
               priority
               quality={100}
             />
