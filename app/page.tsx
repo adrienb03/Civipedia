@@ -47,7 +47,7 @@ export default function Home() {
       {/* Bouton d'inscription en haut à gauche */}
       <div className="absolute top-6 left-6">
         <Link 
-          href="/signup"
+          href="/ui"
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-sm"
         >
           Inscription
