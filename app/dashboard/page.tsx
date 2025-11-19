@@ -1,13 +1,37 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from 'next/image';
-import AuthButtons from './components/AuthButtons';
+import AuthButtons from '../components/AuthButtons';
 
-export default function Home() {
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export default function Dashboard() {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  // Charger les données utilisateur
+  useEffect(() => {
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/auth/check');
+        if (response.ok) {
+          const data = await response.json();
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    }
+
+    loadUserData();
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +64,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Composant d'authentification conditionnelle en haut à droite */}
+      {/* Icône de profil en haut à droite */}
       <div className="absolute top-6 right-6">
         <AuthButtons />
       </div>
@@ -60,6 +84,18 @@ export default function Home() {
             />
           </div>
         </div>
+
+        {/* Message de bienvenue avec les VRAIES données */}
+        {userData && (
+          <div className="text-center mb-6">
+            <p className="text-gray-600 text-lg">
+              Bienvenue, <span className="font-semibold text-blue-600">{userData.name}</span> !
+            </p>
+            <p className="text-gray-500 text-sm">
+              {userData.email}
+            </p>
+          </div>
+        )}
 
         {/* Conteneur principal pour le formulaire et les résultats */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
@@ -83,7 +119,7 @@ export default function Home() {
             </div>
           </form>
 
-          {/* Barre d'outils avec les boutons d'actions */}
+          {/* BARRE D'OUTILS - MÊME QUE SUR LA PAGE D'ACCUEIL */}
           <div className="flex justify-center space-x-6 pt-4 border-t border-gray-200">
             {/* Bouton pour accéder aux modèles DIA */}
             <button 
@@ -150,11 +186,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* Message d'information pour les non-connectés */}
+          {/* Message pour les utilisateurs connectés */}
           {!response && (
             <div className="text-center pt-6">
               <p className="text-gray-500 text-sm">
-                Connectez-vous pour accéder à toutes les fonctionnalités de Civipedia
+                Utilisez le moteur de recherche pour explorer la base de connaissances Civipedia
               </p>
             </div>
           )}
