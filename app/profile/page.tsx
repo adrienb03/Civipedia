@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+// Page: Profile — affichage des informations utilisateur
+// Fonction pour montrer le profil de l'utilisateur connecté
 import useSession from '@/lib/hooks/useSession'
 
 interface UserData {

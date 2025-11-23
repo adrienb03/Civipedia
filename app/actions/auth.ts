@@ -3,6 +3,8 @@
 import { db } from '@/db';
 import { users } from '@/db/schema'
 import { SignupFormSchema, LoginFormSchema, FormState } from '@/lib/definitions'
+// Actions serveur: signup/login/logout/getSession
+// Fonctions serveur pour gérer l'authentification et les cookies
 import bcrypt from 'bcryptjs'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
@@ -10,6 +12,7 @@ import { eq } from 'drizzle-orm'
 import { setAuthCookies, clearAuthCookies, getSessionFromCookieStore } from '@/lib/server/auth'
 
 export async function signup(state: FormState, formData: FormData) {
+  // Fonction pour créer un utilisateur et définir le cookie de session
   const validatedFields = SignupFormSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -48,6 +51,7 @@ export async function signup(state: FormState, formData: FormData) {
     }
 
     const cookieStore = await cookies()
+    // Mettre la cookie de session côté serveur (httpOnly)
     console.log('Server action signup: setting auth cookies for user', user.id)
     await setAuthCookies(cookieStore, user)
 
@@ -97,6 +101,7 @@ export async function login(state: FormState, formData: FormData) {
     }
 
     const cookieStore = await cookies()
+    // Après vérification des identifiants, définir la cookie de session
     console.log('Server action login: setting auth cookies for user', user[0].id)
     await setAuthCookies(cookieStore, { id: user[0].id, name: user[0].name })
 

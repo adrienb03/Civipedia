@@ -2,7 +2,8 @@
 
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-// This is the 'users' table your 'signup' function will use
+// Schéma DB: définition de la table users
+// Définit la structure utilisée par les fonctions d'authentification
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),

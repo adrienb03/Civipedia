@@ -1,3 +1,5 @@
+// Route API: /api/auth/check
+// Fonction pour vérifier la session utilisateur côté serveur
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { db } from '@/db'
@@ -8,6 +10,7 @@ import { getSessionFromCookieStore, clearAuthCookies, setAuthCookies } from '@/l
 export async function GET() {
   try {
     const cookieStore = await cookies()
+    // Lire la cookie de session et obtenir l'ID utilisateur
     const userId = await getSessionFromCookieStore(cookieStore)
     if (!userId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
@@ -25,7 +28,8 @@ export async function GET() {
       .limit(1)
 
     if (userData.length === 0) {
-      // Supprimer les cookies invalides
+      // Si l'utilisateur n'existe plus en base, nettoyer les cookies
+      // pour éviter d'avoir un état stale côté client
       clearAuthCookies(cookieStore)
       return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }

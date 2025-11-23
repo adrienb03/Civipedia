@@ -1,5 +1,7 @@
 'use client'
 
+// Page: Login — formulaire de connexion
+// Fonction pour envoyer les données de connexion au serveur
 import { login } from '@/app/actions/auth'
 import { useActionState, startTransition } from 'react'
 import { useState } from 'react'
@@ -17,15 +19,18 @@ export default function LoginPage() {
     e.preventDefault()
     const form = e.currentTarget
     const formData = new FormData(form)
+    // Valider côté client avec Zod avant d'appeler l'action serveur
     const parsed = validateForm(formData)
 
     if (!parsed.success) {
+      // Si erreurs, afficher les messages sous les champs
       setClientErrors(parsed.errors)
       return
     }
 
+    // Effacer les erreurs client puis appeler l'action serveur
     setClientErrors({})
-    // call the server action inside a transition so isPending updates correctly
+    // Appeler l'action serveur dans une transition pour que React gère `pending`
     startTransition(() => {
       void action(formData)
     })

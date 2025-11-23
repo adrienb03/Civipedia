@@ -1,5 +1,7 @@
 "use client";
 
+// Page: Dashboard — zone utilisateur protégée
+// Fonction pour afficher le tableau de bord de l'utilisateur
 import { useState } from "react";
 import Image from 'next/image';
 import AuthButtons from '../components/AuthButtons';

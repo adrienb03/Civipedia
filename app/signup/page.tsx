@@ -1,5 +1,7 @@
 "use client"
 
+// Page: Signup — formulaire d'inscription
+// Fonction pour créer un nouvel utilisateur et définir la session
 import { signup } from '@/app/actions/auth'
 import { useActionState, startTransition } from 'react'
 import { useState } from 'react'
@@ -18,15 +20,18 @@ export default function SignupPage() {
     e.preventDefault()
     const form = e.currentTarget
     const formData = new FormData(form)
+    // Valider le formulaire côté client avec Zod
     const parsed = validateForm(formData)
 
     if (!parsed.success) {
+      // Afficher les erreurs client si nécessaire
       setClientErrors(parsed.errors)
       return
     }
 
+    // Si tout est OK, effacer les erreurs et appeler l'action serveur
     setClientErrors({})
-    // call the server action inside a transition so React's pending state updates correctly
+    // Appel de l'action serveur dans une transition (mise à jour non bloquante)
     startTransition(() => {
       void action(formData)
     })

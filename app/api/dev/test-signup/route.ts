@@ -1,3 +1,5 @@
+// Route de test dev: /api/dev/test-signup
+// Fonction pour simuler la création d'un utilisateur en environnement dev
 import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'

@@ -1,3 +1,5 @@
+// Layout racine: hydrate la session côté serveur et fournit le fallback SWR
+// Fonction pour précharger la session et rendre l'en-tête authentifié
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

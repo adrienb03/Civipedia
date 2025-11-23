@@ -1,3 +1,5 @@
+// Script d'intégration: tests end-to-end signup/login/logout
+// Fonction pour joindre les endpoints locaux et vérifier les cookies
 const fetch = globalThis.fetch || (() => {
   try { return require('node-fetch') } catch (e) { throw new Error('No fetch available; install node-fetch or run on Node 18+') }
 })()
@@ -31,7 +33,9 @@ async function postForm(url, fields, cookie, asJson = false) {
 
   if (cookie) headers['Cookie'] = cookie
 
+  // Envoyer la requête POST en tenant compte du type de payload
   const res = await fetch(url, { method: 'POST', body, headers, redirect: 'manual' })
+  // Extraire l'entête Set-Cookie pour simuler le stockage cookie côté client
   const setCookie = extractCookies(res)
   return { res, setCookie }
 }
@@ -39,6 +43,7 @@ async function postForm(url, fields, cookie, asJson = false) {
 async function getJson(url, cookie) {
   const headers = {}
   if (cookie) headers['Cookie'] = cookie
+  // Appel GET simple (envoi optionnel d'un header Cookie)
   const res = await fetch(url, { headers })
   let json = null
   try { json = await res.json() } catch(e) {}

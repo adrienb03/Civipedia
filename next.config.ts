@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+// Configuration Next.js
+// Fichier de configuration pour le serveur Next
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],

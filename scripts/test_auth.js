@@ -1,3 +1,5 @@
+// Script utilitaire de test: vérifie rapidement les routes d'auth
+// Fonction pour tester /api/auth endpoints en local
 const Database = require('better-sqlite3')
 const bcrypt = require('bcryptjs')
 const fetch = global.fetch || require('node-fetch')

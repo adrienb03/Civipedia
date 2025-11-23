@@ -1,3 +1,5 @@
+// Route de test dev: /api/dev/test-login
+// Fonction pour simuler une connexion et renvoyer un utilisateur (dev only)
 import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+// Page d'accueil: Home — composant principal
+// Fonction pour afficher la page d'accueil et liens rapides
 import Image from 'next/image';
 import AuthButtons from './components/AuthButtons';
 import RagSearch from './components/RagSearch';

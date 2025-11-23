@@ -1,5 +1,7 @@
 "use client"
 
+// Composant UI: AuthButtons — affichage bouton connexion/profil/déconnexion
+// Fonction pour gérer l'état d'authentification côté client
 import Link from 'next/link'
 import { useState } from 'react'
 import useSession from '@/lib/hooks/useSession'
@@ -13,11 +15,13 @@ export default function AuthButtons({ initialSession }: { initialSession?: any }
       console.log('AuthButtons: handleLogout called')
       const res = await fetch('/api/auth/logout', { method: 'POST' })
       if (res.ok) {
-        // clear cached session
+        // Clearer le cache SWR local pour `/api/auth/check`
         console.log('AuthButtons: logout response ok, mutating SWR')
+        // On remplace la valeur par `null` sans revalidation côté client
         mutate(null, { revalidate: false })
+        // Fermer le menu profil si ouvert
         setShowProfile(false)
-        // small delay to let mutate propagate in client
+        // Petite attente pour laisser SWR propager avant la redirection
         setTimeout(() => { window.location.href = '/' }, 100)
       } else {
         console.error('Logout API failed')
@@ -29,6 +33,7 @@ export default function AuthButtons({ initialSession }: { initialSession?: any }
   }
 
   if (isLoading) {
+    // Afficher un loader placeholder pendant la récupération de la session
     return <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
   }
 

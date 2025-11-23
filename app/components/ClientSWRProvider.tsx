@@ -1,5 +1,7 @@
 "use client"
 
+// Composant: ClientSWRProvider — fournit la configuration SWR côté client
+// Fonction pour hydrater le fallback fourni depuis le server layout
 import React from 'react'
 import { SWRConfig } from 'swr'
 

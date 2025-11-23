@@ -1,3 +1,6 @@
+// Composant UI: RagSearch — recherche RAG et affichage des résultats
+// Fonction pour gérer l'interface de recherche et l'affichage côté client
+
 "use client"
 
 import { useState } from "react";
