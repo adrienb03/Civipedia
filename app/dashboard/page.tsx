@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from 'next/image';
 import AuthButtons from '../components/AuthButtons';
+import useSession from '@/lib/hooks/useSession'
 
 interface UserData {
   id: string;
@@ -15,23 +16,10 @@ export default function Dashboard() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const { user, isLoading } = useSession()
 
-  // Charger les données utilisateur
-  useEffect(() => {
-    async function loadUserData() {
-      try {
-        const response = await fetch('/api/auth/check');
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data);
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-      }
-    }
-
-    loadUserData();
-  }, []);
+  // keep local typed alias for template
+  const sessionUser = user as UserData | null
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,10 +52,7 @@ export default function Dashboard() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Icône de profil en haut à droite */}
-      <div className="absolute top-6 right-6">
-        <AuthButtons />
-      </div>
+      {/* Auth buttons moved to layout for server-side rendering */}
 
       <div className="w-full max-w-4xl">
         {/* Section d'affichage du logo Civipedia */}
@@ -86,13 +71,13 @@ export default function Dashboard() {
         </div>
 
         {/* Message de bienvenue avec les VRAIES données */}
-        {userData && (
+        {sessionUser && (
           <div className="text-center mb-6">
             <p className="text-gray-600 text-lg">
-              Bienvenue, <span className="font-semibold text-blue-600">{userData.name}</span> !
+              Bienvenue, <span className="font-semibold text-blue-600">{sessionUser.name}</span> !
             </p>
             <p className="text-gray-500 text-sm">
-              {userData.email}
+              {sessionUser.email}
             </p>
           </div>
         )}

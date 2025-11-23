@@ -1,12 +1,36 @@
-'use client'
+"use client"
 
 import { signup } from '@/app/actions/auth'
-import { useActionState } from 'react'
+import { useActionState, startTransition } from 'react'
+import { useState } from 'react'
+import { SignupFormSchema } from '@/lib/definitions'
+import useFormValidation from '@/lib/hooks/useFormValidation'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signup, undefined)
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
+
+  const { validateForm } = useFormValidation(SignupFormSchema)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const parsed = validateForm(formData)
+
+    if (!parsed.success) {
+      setClientErrors(parsed.errors)
+      return
+    }
+
+    setClientErrors({})
+    // call the server action inside a transition so React's pending state updates correctly
+    startTransition(() => {
+      void action(formData)
+    })
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -45,7 +69,7 @@ export default function SignupPage() {
             Rejoignez Civipedia dès aujourd'hui
           </p>
 
-          <form action={action} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Champ Nom */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -57,6 +81,9 @@ export default function SignupPage() {
                 placeholder="Votre nom complet" 
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
+              {clientErrors?.name && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.name}</p>
+              )}
               {state?.errors?.name && (
                 <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.name}</p>
               )}
@@ -73,6 +100,9 @@ export default function SignupPage() {
                 placeholder="votre@email.com" 
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
+              {clientErrors?.email && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>
+              )}
               {state?.errors?.email && (
                 <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.email}</p>
               )}
@@ -90,6 +120,16 @@ export default function SignupPage() {
                 placeholder="Votre mot de passe"
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
+              {clientErrors?.password && (
+                <div className="text-red-500 text-sm mt-2 ml-2">
+                  <p className="font-medium mb-1">Le mot de passe doit :</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {clientErrors.password.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {state?.errors?.password && (
                 <div className="text-red-500 text-sm mt-2 ml-2">
                   <p className="font-medium mb-1">Le mot de passe doit :</p>

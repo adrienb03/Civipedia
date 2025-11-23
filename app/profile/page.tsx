@@ -1,9 +1,10 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import useSession from '@/lib/hooks/useSession'
 
 interface UserData {
   id: string
@@ -13,32 +14,20 @@ interface UserData {
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null)
-  const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const { user: sessionUser, isLoading, error } = useSession()
 
   useEffect(() => {
-    async function loadUserData() {
-      try {
-        const response = await fetch('/api/auth/check')
-        if (response.ok) {
-          const userData = await response.json()
-          setUser(userData)
-        } else {
-          // Rediriger vers la page de connexion si non authentifié
-          router.push('/login')
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error)
+    if (!isLoading) {
+      if (!sessionUser) {
         router.push('/login')
-      } finally {
-        setLoading(false)
+      } else {
+        setUser(sessionUser as UserData)
       }
     }
+  }, [isLoading, sessionUser, router])
 
-    loadUserData()
-  }, [router])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">

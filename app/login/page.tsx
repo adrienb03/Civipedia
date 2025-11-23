@@ -1,12 +1,36 @@
 'use client'
 
 import { login } from '@/app/actions/auth'
-import { useActionState } from 'react'
+import { useActionState, startTransition } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { LoginFormSchema } from '@/lib/definitions'
+import useFormValidation from '@/lib/hooks/useFormValidation'
 
 export default function LoginPage() {
   const [state, action, pending] = useActionState(login, undefined)
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
+  const { validateForm } = useFormValidation(LoginFormSchema)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const parsed = validateForm(formData)
+
+    if (!parsed.success) {
+      setClientErrors(parsed.errors)
+      return
+    }
+
+    setClientErrors({})
+    // call the server action inside a transition so isPending updates correctly
+    startTransition(() => {
+      void action(formData)
+    })
+
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -51,7 +75,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form action={action} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Champ Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -65,6 +89,12 @@ export default function LoginPage() {
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
                 required
               />
+              {clientErrors?.email && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>
+              )}
+              {state?.errors?.email && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.email}</p>
+              )}
             </div>
 
             {/* Champ Mot de passe */}
@@ -80,6 +110,12 @@ export default function LoginPage() {
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
                 required
               />
+              {clientErrors?.password && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.password}</p>
+              )}
+              {state?.errors?.password && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.password}</p>
+              )}
             </div>
 
             {/* Bouton de connexion */}
