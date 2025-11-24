@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 export default function ConfirmResetPage() {
   const [newPassword, setNewPassword] = useState('')
@@ -10,6 +10,7 @@ export default function ConfirmResetPage() {
   const [loading, setLoading] = useState(false)
   const params = useSearchParams()
   const token = params?.get('token') ?? ''
+  const router = useRouter()
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,7 +27,15 @@ export default function ConfirmResetPage() {
       })
       const data = await res.json()
       if (data?.ok) {
-        setMessage('Mot de passe mis à jour. Vous pouvez vous connecter.')
+        setMessage('Mot de passe mis à jour. Redirection vers la connexion...')
+        // Redirect user to login with a query param to show a friendly message
+        try {
+          setTimeout(() => {
+            router.push('/login?reset=1')
+          }, 800)
+        } catch (e) {
+          // ignore
+        }
       } else {
         setMessage('Erreur: ' + (data?.error || 'inconnue'))
       }

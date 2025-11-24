@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Email (development and production)
+
+This project uses a small mailer helper that supports two modes:
+
+- Development: MailHog (local SMTP) captures emails so they don't leave your machine. Run MailHog via Docker:
+
+```bash
+docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+```
+
+Open the MailHog UI at `http://localhost:8025` to view captured messages.
+
+- Production: configure SendGrid. Set the `SENDGRID_API_KEY` and `SENDGRID_FROM` variables in your environment.
+
+For local development, copy `.env.local.example` to `.env.local` and adjust values. Do NOT commit `.env.local`.
+
+Security note for local MailHog usage:
+- The development convenience that returns the reset link (`resetUrl`) in API responses is only enabled in non-production mode, and now only when the request originates from the local machine (`127.0.0.1`/`::1`).
+- Do NOT expose MailHog or the dev server on public networks: if MailHog is reachable remotely, an attacker could capture dev emails. Run MailHog locally (localhost) and avoid publishing SMTP ports on shared servers.

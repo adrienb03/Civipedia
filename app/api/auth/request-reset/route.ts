@@ -86,8 +86,21 @@ export async function POST(request: Request) {
     // Send email (mock if no key)
     const sendRes = await sendResetEmail(user.email, token)
 
-    // For security, return generic OK message. In dev the mailer mock logs the token.
-    return NextResponse.json({ ok: true, info: process.env.NODE_ENV !== 'production' ? sendRes.info : undefined })
+    // For security, return generic OK message. In dev we may include the resetUrl
+    // but only when the request originates from localhost to avoid leaking the
+    // reset link to remote requesters (e.g. an attacker calling the API remotely).
+    let infoToReturn: any = undefined
+    if (process.env.NODE_ENV !== 'production' && sendRes?.info) {
+      const localIps = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1', 'localhost'])
+      if (localIps.has(ip)) {
+        infoToReturn = sendRes.info
+      } else {
+        // Do not return resetUrl to remote clients; log for debugging
+        if (process.env.NODE_ENV !== 'production') console.debug('Reset requested from non-local IP; not returning resetUrl in response', ip)
+      }
+    }
+
+    return NextResponse.json({ ok: true, info: infoToReturn })
   } catch (e) {
     console.error('request-reset error:', e)
     return NextResponse.json({ ok: true })

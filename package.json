@@ -13,7 +13,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.6",
+  "@sendgrid/mail": "^8.1.6",
+  "nodemailer": "^6.9.4",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.4.1",

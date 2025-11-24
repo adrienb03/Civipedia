@@ -9,8 +9,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { LoginFormSchema } from '@/lib/definitions'
 import useFormValidation from '@/lib/hooks/useFormValidation'
+import { useSearchParams } from 'next/navigation'
 
 export default function LoginPage() {
+  const params = useSearchParams()
+  const resetSuccess = params?.get('reset') === '1'
+
   const [state, action, pending] = useActionState(login, undefined)
   const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
   const { validateForm } = useFormValidation(LoginFormSchema)
@@ -77,6 +81,12 @@ export default function LoginPage() {
           {state?.message && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
               {state.message}
+            </div>
+          )}
+
+          {resetSuccess && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-4">
+              Votre mot de passe a bien été mis à jour. Vous pouvez vous connecter.
             </div>
           )}
 
