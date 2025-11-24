@@ -25,3 +25,21 @@ export const anon_counters = sqliteTable('anon_counters', {
   count: integer('count').notNull().default(0),
   updated_at: integer('updated_at').notNull().default(0), // timestamp ms
 });
+
+// Table pour stocker les tokens de réinitialisation de mot de passe (email)
+export const password_reset_tokens = sqliteTable('password_reset_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  user_id: integer('user_id').notNull(),
+  token_hash: text('token_hash').notNull(),
+  expires_at: integer('expires_at').notNull(),
+  used: integer('used').notNull().default(0),
+  created_at: integer('created_at').notNull().default(() => Date.now()),
+});
+
+// Table pour logger les demandes de reset (rate-limiting)
+export const reset_request_logs = sqliteTable('reset_request_logs', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  identifier: text('identifier'), // email ou phone
+  ip: text('ip'),
+  created_at: integer('created_at').notNull().default(() => Date.now()),
+});
