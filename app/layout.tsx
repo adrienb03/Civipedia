@@ -40,14 +40,32 @@ export default async function RootLayout({
   let initialSession = null
   if (userId) {
     const userData = await db
-      .select({ id: users.id, name: users.name, email: users.email })
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        pseudo: users.pseudo,
+        first_name: users.first_name,
+        last_name: users.last_name,
+        phone: users.phone,
+        organization: users.organization,
+      })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1)
 
     if (userData.length > 0) {
       const u = userData[0]
-      initialSession = { id: String(u.id), name: u.name, email: u.email }
+      initialSession = {
+        id: String(u.id),
+        name: u.name,
+        email: u.email,
+        pseudo: u.pseudo ?? null,
+        first_name: u.first_name ?? null,
+        last_name: u.last_name ?? null,
+        phone: u.phone ?? null,
+        organization: u.organization ?? null,
+      }
     } else {
       // If the cookie pointed to a missing user, clear it to avoid stale state
       cookieStore.delete('user_id')

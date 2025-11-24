@@ -56,10 +56,13 @@ async function run() {
   console.log('=== Signup flow ===')
   const timestamp = Date.now()
   const email = `int+${timestamp}@example.com`
-  const name = 'Int Test'
+  const first_name = 'Int'
+  const last_name = 'Test'
+  const name = `${first_name} ${last_name}`
   const password = 'Password123!'
 
-  let r = await postForm(base + '/api/dev/test-signup', { name, email, password }, null, true)
+  // Provide required fields for the updated signup contract
+  let r = await postForm(base + '/api/dev/test-signup', { pseudo: `int${timestamp}`, first_name, last_name, name, email, password }, null, true)
   console.log('Signup status', r.res.status)
   console.log('Signup set-cookie:', r.setCookie)
 
@@ -83,12 +86,12 @@ async function run() {
   // Create user directly if needed
   const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'local.db')
   const db = new Database(DB_PATH)
-  db.exec(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)`)
+  db.exec(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, pseudo TEXT, first_name TEXT, last_name TEXT, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL, phone TEXT, organization TEXT)`) 
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email)
   if (!exists) {
     const bcrypt = require('bcryptjs')
     const hashed = bcrypt.hashSync(password, 10)
-    const info = db.prepare('INSERT INTO users (name,email,password) VALUES (?,?,?)').run(name, email, hashed)
+    const info = db.prepare('INSERT INTO users (name,pseudo,first_name,last_name,email,password) VALUES (?,?,?,?,?,?)').run(name, `int${timestamp}`, first_name, last_name, email, hashed)
     console.log('Inserted user id', info.lastInsertRowid)
   }
   db.close()

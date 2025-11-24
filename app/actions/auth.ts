@@ -14,9 +14,13 @@ import { setAuthCookies, clearAuthCookies, getSessionFromCookieStore } from '@/l
 export async function signup(state: FormState, formData: FormData) {
   // Fonction pour créer un utilisateur et définir le cookie de session
   const validatedFields = SignupFormSchema.safeParse({
-    name: formData.get('name'),
+    pseudo: formData.get('pseudo'),
+    first_name: formData.get('first_name'),
+    last_name: formData.get('last_name'),
     email: formData.get('email'),
     password: formData.get('password'),
+    phone: formData.get('phone'),
+    organization: formData.get('organization'),
   })
 
   if (!validatedFields.success) {
@@ -25,21 +29,34 @@ export async function signup(state: FormState, formData: FormData) {
     }
   }
 
-  const { name, email, password } = validatedFields.data
+  const { pseudo, first_name, last_name, email, password, phone, organization } = validatedFields.data
   const hashedPassword = await bcrypt.hash(password, 10)
 
   try {
+    // Conserver la compatibilité: on stocke aussi `name` comme combinaison prénom+nom
+    const fullName = `${first_name} ${last_name}`
+
     const data = await db
       .insert(users)
       .values({
-        name,
+        name: fullName,
+        pseudo,
+        first_name,
+        last_name,
         email,
         password: hashedPassword,
+        phone: phone || null,
+        organization: organization || null,
       })
       .returning({ 
         id: users.id, 
         name: users.name, 
-        email: users.email 
+        email: users.email,
+        pseudo: users.pseudo,
+        first_name: users.first_name,
+        last_name: users.last_name,
+        phone: users.phone,
+        organization: users.organization,
       })
 
     const user = data[0]
