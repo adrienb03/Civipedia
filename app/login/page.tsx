@@ -1,40 +1,40 @@
-"use client"
+'use client'
 
-// Page: Signup — formulaire d'inscription
-// Fonction pour créer un nouvel utilisateur et définir la session
-import { signup } from '@/app/actions/auth'
+// Page: Login — formulaire de connexion
+// Fonction pour envoyer les données de connexion au serveur
+import { login } from '@/app/actions/auth'
 import { useActionState, startTransition } from 'react'
 import { useState } from 'react'
-import { SignupFormSchema } from '@/lib/definitions'
-import useFormValidation from '@/lib/hooks/useFormValidation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { LoginFormSchema } from '@/lib/definitions'
+import useFormValidation from '@/lib/hooks/useFormValidation'
 
-export default function SignupPage() {
-  const [state, action, pending] = useActionState(signup, undefined)
+export default function LoginPage() {
+  const [state, action, pending] = useActionState(login, undefined)
   const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
-
-  const { validateForm } = useFormValidation(SignupFormSchema)
+  const { validateForm } = useFormValidation(LoginFormSchema)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
     const formData = new FormData(form)
-    // Valider le formulaire côté client avec Zod
+    // Valider côté client avec Zod avant d'appeler l'action serveur
     const parsed = validateForm(formData)
 
     if (!parsed.success) {
-      // Afficher les erreurs client si nécessaire
+      // Si erreurs, afficher les messages sous les champs
       setClientErrors(parsed.errors)
       return
     }
 
-    // Si tout est OK, effacer les erreurs et appeler l'action serveur
+    // Effacer les erreurs client puis appeler l'action serveur
     setClientErrors({})
-    // Appel de l'action serveur dans une transition (mise à jour non bloquante)
+    // Appeler l'action serveur dans une transition pour que React gère `pending`
     startTransition(() => {
       void action(formData)
     })
+
   }
 
   return (
@@ -68,32 +68,19 @@ export default function SignupPage() {
         {/* Conteneur principal du formulaire */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
           <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
-            Créer un compte
+            Se connecter
           </h1>
           <p className="text-gray-600 text-center mb-8">
-            Rejoignez Civipedia dès aujourd'hui
+            Accédez à votre compte Civipedia
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Champ Nom */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nom complet
-              </label>
-              <input 
-                id="name" 
-                name="name" 
-                placeholder="Votre nom complet" 
-                className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
-              />
-              {clientErrors?.name && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.name}</p>
-              )}
-              {state?.errors?.name && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.name}</p>
-              )}
+          {state?.message && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
+              {state.message}
             </div>
+          )}
 
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Champ Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -102,8 +89,10 @@ export default function SignupPage() {
               <input 
                 id="email" 
                 name="email" 
+                type="email"
                 placeholder="votre@email.com" 
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+                required
               />
               {clientErrors?.email && (
                 <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>
@@ -124,47 +113,34 @@ export default function SignupPage() {
                 type="password" 
                 placeholder="Votre mot de passe"
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+                required
               />
               {clientErrors?.password && (
-                <div className="text-red-500 text-sm mt-2 ml-2">
-                  <p className="font-medium mb-1">Le mot de passe doit :</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    {clientErrors.password.map((error) => (
-                      <li key={error}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
+                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.password}</p>
               )}
               {state?.errors?.password && (
-                <div className="text-red-500 text-sm mt-2 ml-2">
-                  <p className="font-medium mb-1">Le mot de passe doit :</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    {state.errors.password.map((error) => (
-                      <li key={error}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
+                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.password}</p>
               )}
             </div>
 
-            {/* Bouton d'inscription */}
+            {/* Bouton de connexion */}
             <button 
               disabled={pending} 
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:transform-none transition-all duration-200 font-semibold text-lg"
             >
-              {pending ? "Création du compte..." : "S'inscrire"}
+              {pending ? "Connexion..." : "Se connecter"}
             </button>
 
-            {/* Lien de connexion */}
+            {/* Lien d'inscription */}
             <div className="text-center pt-4 border-t border-gray-200">
               <p className="text-gray-600">
-                Déjà un compte ?{' '}
+                Pas encore de compte ?{' '}
                 <Link 
-                  href="/login"
+                  href="/signup"
                   className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-200"
                 >
-                  Se connecter
+                  S'inscrire
                 </Link>
               </p>
             </div>

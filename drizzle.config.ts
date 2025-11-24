@@ -2,11 +2,13 @@
 
 import type { Config } from 'drizzle-kit';
 
+// Configuration Drizzle ORM
+// Fichier de configuration pour Drizzle et la base SQLite locale
 export default {
   schema: './db/schema.ts',   // Points to your schema file
   out: './drizzle',
-  dialect: 'sqlite',// Where to put migration files   // We are using SQLite
+  dialect: 'sqlite', // We are using SQLite
   dbCredentials: {
-    url: 'local.db',       // This will be the name of your database file!
+    url: 'local.db', // Nom du fichier DB local
   },
 } satisfies Config;
