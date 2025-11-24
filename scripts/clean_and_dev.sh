@@ -50,4 +50,10 @@ if [ -f .next/dev/lock ]; then
 fi
 
 echo "[clean_and_dev] Starting Next dev on port $PORT"
-exec npm run dev --silent -- --port "$PORT"
+# Run the local next binary directly to avoid recursively calling `npm run dev`.
+# Prefer the local project binary if available, otherwise fall back to global `next`.
+if [ -x "./node_modules/.bin/next" ]; then
+  exec "./node_modules/.bin/next" dev --port "$PORT"
+else
+  exec next dev --port "$PORT"
+fi

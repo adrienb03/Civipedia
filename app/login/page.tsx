@@ -95,7 +95,7 @@ export default function LoginPage() {
                 required
               />
               {clientErrors?.email && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>
+                <p className="text-red-500 text-sm mt-2 ml-2">{Array.isArray(clientErrors.email) ? clientErrors.email.join(', ') : clientErrors.email}</p>
               )}
               {state?.errors?.email && (
                 <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.email}</p>
@@ -115,12 +115,19 @@ export default function LoginPage() {
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
                 required
               />
-              {clientErrors?.password && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.password}</p>
-              )}
-              {state?.errors?.password && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.password}</p>
-              )}
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  {clientErrors?.password && (
+                    <p className="text-red-500 text-sm mt-2 ml-2">{Array.isArray(clientErrors.password) ? clientErrors.password.join(', ') : clientErrors.password}</p>
+                  )}
+                  {state?.errors?.password && (
+                    <p className="text-red-500 text-sm mt-2 ml-2">{Array.isArray(state.errors.password) ? state.errors.password.join(', ') : state.errors.password}</p>
+                  )}
+                </div>
+                <div className="ml-4 text-right">
+                  <Link href="/auth/reset/request" className="text-sm text-blue-600 hover:underline">Mot de passe oublié&nbsp;?</Link>
+                </div>
+              </div>
             </div>
 
             {/* Bouton de connexion */}
