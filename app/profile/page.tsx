@@ -129,10 +129,7 @@ export default function ProfilePage() {
                 <p className="text-lg font-semibold text-gray-900">{user.organization ?? '-'}</p>
               </div>
 
-              <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
-                <label className="block text-sm font-medium text-gray-500 mb-1">ID utilisateur</label>
-                <p className="text-lg font-semibold text-gray-900">{user.id}</p>
-              </div>
+              {/* ID utilisateur supprimé : on n'affiche plus l'identifiant pour des raisons de confidentialité */}
             </div>
 
             {/* Boutons d'action */}

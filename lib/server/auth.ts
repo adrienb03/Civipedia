@@ -1,5 +1,8 @@
 // lib/server/auth.ts
 import { cookies as nextCookies } from 'next/headers'
+import { db } from '@/db'
+import { anon_counters } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 // ReturnType<typeof nextCookies> can vary between versions/environments
 // (sometimes a Promise, sometimes sync). To avoid fragile types we accept
@@ -36,6 +39,17 @@ export async function setAuthCookies(cookieStore: MaybePromise<any>, user: { id:
   const store = await resolveStore(cookieStore)
   // Stocke uniquement l'identifiant dans une cookie httpOnly pour la sécurité
   store.set('user_id', String(user.id), COOKIE_OPTIONS)
+  // Si un identifiant anonyme existait, supprimer son compteur côté serveur
+  try {
+    const anonId = store.get('anon_id')?.value
+    if (anonId) {
+      await db.delete(anon_counters).where(eq(anon_counters.id, anonId))
+      // Supprimer également le cookie `anon_id`
+      try { store.delete('anon_id') } catch (e) { /* ignore */ }
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') console.debug('Could not clear anon counter on login:', e)
+  }
 }
 
 /**

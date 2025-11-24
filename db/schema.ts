@@ -18,3 +18,10 @@ export const users = sqliteTable('users', {
   phone: text('phone'),
   organization: text('organization'),
 });
+
+// Table pour stocker les compteurs de requêtes des utilisateurs anonymes
+export const anon_counters = sqliteTable('anon_counters', {
+  id: text('id').primaryKey(), // id issu d'un cookie `anon_id`
+  count: integer('count').notNull().default(0),
+  updated_at: integer('updated_at').notNull().default(0), // timestamp ms
+});

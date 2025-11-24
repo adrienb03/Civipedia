@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function RagSearch() {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
+  const [remaining, setRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -25,7 +26,16 @@ export default function RagSearch() {
       });
 
       const data = await res.json();
-      setResponse(data.answer);
+
+      if (res.status === 401 || data?.error === 'limit') {
+        // Limite atteinte pour utilisateur anonyme
+        setResponse(data?.message || 'Veuillez vous connecter pour continuer.')
+        setRemaining(0)
+        return
+      }
+
+      setResponse(data.answer ?? '')
+      setRemaining(typeof data?.remaining === 'number' ? data.remaining : null)
     } catch (error) {
       console.error("Erreur:", error);
       setResponse("Erreur lors de la recherche.");
@@ -87,7 +97,13 @@ export default function RagSearch() {
 
       {!response && (
         <div className="text-center pt-6">
-          <p className="text-gray-500 text-sm">Connectez-vous pour accéder à toutes les fonctionnalités de Civipedia</p>
+          {remaining === null ? (
+            <p className="text-gray-500 text-sm">Connectez-vous pour accéder à toutes les fonctionnalités de Civipedia</p>
+          ) : remaining > 0 ? (
+            <p className="text-gray-500 text-sm">Il vous reste {remaining} recherche{remaining > 1 ? 's' : ''} avant de devoir vous connecter.</p>
+          ) : (
+            <p className="text-gray-500 text-sm">Vous avez atteint la limite de recherches. <a href="/login" className="text-blue-600 hover:underline">Connectez-vous</a> pour continuer.</p>
+          )}
         </div>
       )}
     </div>

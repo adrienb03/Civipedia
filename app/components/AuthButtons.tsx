@@ -60,7 +60,7 @@ export default function AuthButtons({ initialSession }: { initialSession?: any }
                 className="block text-sm text-gray-700 hover:text-gray-900 mb-3 font-medium"
                 onClick={() => setShowProfile(false)}
               >
-                👤 Mon profil complet
+                👤 Profile
               </Link>
               <button
                 onClick={handleLogout}
