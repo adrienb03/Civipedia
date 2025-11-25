@@ -31,10 +31,24 @@ export async function signup(state: FormState, formData: FormData) {
 
   const { pseudo, first_name, last_name, email, password, phone, organization } = validatedFields.data
   const hashedPassword = await bcrypt.hash(password, 10)
+  // Normaliser l'email pour éviter les doublons causés par la casse/espaces
+  const emailNormalized = (email || '').toString().trim().toLowerCase()
 
   try {
     // Conserver la compatibilité: on stocke aussi `name` comme combinaison prénom+nom
     const fullName = `${first_name} ${last_name}`
+    // Vérifier si l'email est déjà utilisé (éviter violation de contrainte UNIQUE)
+    const existing = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, emailNormalized))
+      .limit(1)
+
+    if (existing.length > 0) {
+      return {
+        message: 'This email is already registered. Did you mean to log in?'
+      }
+    }
 
     const data = await db
       .insert(users)
@@ -43,7 +57,7 @@ export async function signup(state: FormState, formData: FormData) {
         pseudo,
         first_name,
         last_name,
-        email,
+        email: emailNormalized,
         password: hashedPassword,
         phone: phone || null,
         organization: organization || null,
@@ -72,7 +86,16 @@ export async function signup(state: FormState, formData: FormData) {
     console.log('Server action signup: setting auth cookies for user', user.id)
     await setAuthCookies(cookieStore, user)
 
-  } catch (error) {
+  } catch (error: any) {
+    // Si malgré la vérification préalable une contrainte UNIQUE est violée (race condition),
+    // renvoyer un message lisible pour l'utilisateur.
+    if (error && (error.code === 'SQLITE_CONSTRAINT_UNIQUE' || (error.message && error.message.includes('UNIQUE constraint failed: users.email')))) {
+      console.error('Signup unique constraint (email) violated:', error)
+      return {
+        message: 'This email is already registered. Did you mean to log in?'
+      }
+    }
+
     console.error('Error during signup:', error)
     return {
       message: 'An error occurred while creating your account.',
@@ -97,10 +120,13 @@ export async function login(state: FormState, formData: FormData) {
   const { email, password } = parsed.data
 
   try {
+    // Normaliser l'email comme lors du signup (lowercase + trim)
+    const emailNormalized = (email || '').toString().trim().toLowerCase()
+
     const user = await db
       .select()
       .from(users)
-      .where(eq(users.email, email.toString()))
+      .where(eq(users.email, emailNormalized))
       .limit(1)
 
     if (user.length === 0) {

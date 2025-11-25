@@ -4,13 +4,6 @@ from llama_index.core import SimpleDirectoryReader, VectorStoreIndex,StorageCont
 from llama_index.core.tools import QueryEngineTool
 from llama_index.core.settings import Settings
 from llama_index.core.query_engine import RetrieverQueryEngine
-# The original code imported QdrantVectorStore, HuggingFaceEmbedding and OpenAILike
-# from older llama-index paths. The package structure changed across versions and
-# these modules are not available under those paths in the installed
-# `llama-index`. Import equivalent classes from the current install to avoid
-# editor/Pylance "unresolved import" warnings. Note: these substitutions
-# may require runtime adjustments (parameters, behaviour) if you depend on
-# the exact original implementations.
 from llama_index.core.vector_stores.simple import SimpleVectorStore as QdrantVectorStore
 from llama_index.embeddings.openai.base import OpenAIEmbedding as HuggingFaceEmbedding
 from llama_index.core.llms.loading import OpenAI as OpenAILike
