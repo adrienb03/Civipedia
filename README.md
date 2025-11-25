@@ -50,7 +50,3 @@ Open the MailHog UI at `http://localhost:8025` to view captured messages.
 - Production: configure SendGrid. Set the `SENDGRID_API_KEY` and `SENDGRID_FROM` variables in your environment.
 
 For local development, copy `.env.local.example` to `.env.local` and adjust values. Do NOT commit `.env.local`.
-
-Security note for local MailHog usage:
-- The development convenience that returns the reset link (`resetUrl`) in API responses is only enabled in non-production mode, and now only when the request originates from the local machine (`127.0.0.1`/`::1`).
-- Do NOT expose MailHog or the dev server on public networks: if MailHog is reachable remotely, an attacker could capture dev emails. Run MailHog locally (localhost) and avoid publishing SMTP ports on shared servers.
