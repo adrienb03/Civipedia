@@ -50,3 +50,29 @@ Open the MailHog UI at `http://localhost:8025` to view captured messages.
 - Production: configure SendGrid. Set the `SENDGRID_API_KEY` and `SENDGRID_FROM` variables in your environment.
 
 For local development, copy `.env.local.example` to `.env.local` and adjust values. Do NOT commit `.env.local`.
+
+### Developer setup (recommended)
+
+- Should other developers install MailHog? **Yes (recommended for local development).**
+	- This project captures emails locally in development via MailHog so that real emails are not sent.
+	- Team members working on authentication or email features should run MailHog locally or use the provided Docker command.
+
+- Quick start options:
+	- Docker (preferred):
+
+```bash
+npm run mailhog
+# or the raw docker command:
+docker run --rm -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
+
+	- Homebrew (macOS):
+
+```bash
+brew install mailhog
+mailhog
+```
+
+- After MailHog is running, copy `.env.local.example` to `.env.local` and run the app with `npm run dev`. Open `http://localhost:8025` to see emails.
+
+If a developer prefers not to run MailHog, they can still develop, but they won't receive the captured emails locally; in that case the server logs (in dev) will contain the `resetUrl` for convenience.

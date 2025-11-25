@@ -10,6 +10,51 @@ cd "$PROJECT_ROOT"
 
 echo "[clean_and_dev] Using port: $PORT"
 
+# Load local env vars if present so we can read MAILHOG_HOST/PORT
+if [ -f .env.local ]; then
+  echo "[clean_and_dev] Sourcing .env.local"
+  # shellcheck disable=SC1091
+  set -o allexport
+  # source may fail on complex env files; ignore errors
+  source .env.local || true
+  set +o allexport
+fi
+
+# Attempt to ensure MailHog is running in dev when configured
+MAILHOG_PORT=${MAILHOG_PORT:-1025}
+MAILHOG_UI_PORT=${MAILHOG_UI_PORT:-8025}
+if [ "${NODE_ENV:-development}" = "development" ]; then
+  # Check if something is already listening on the MailHog SMTP port
+  if ! lsof -iTCP:"$MAILHOG_PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "[clean_and_dev] MailHog not detected on port $MAILHOG_PORT — attempting to start"
+    # Prefer a system binary if available
+    if command -v MailHog >/dev/null 2>&1 || command -v mailhog >/dev/null 2>&1; then
+      MH_BIN=$(command -v MailHog 2>/dev/null || command -v mailhog)
+      echo "[clean_and_dev] Starting MailHog via binary: $MH_BIN"
+      "$MH_BIN" -api-bind-addr 127.0.0.1:$MAILHOG_UI_PORT -smtp-bind-addr 127.0.0.1:$MAILHOG_PORT -ui-bind-addr 127.0.0.1:$MAILHOG_UI_PORT > .next/mailhog.log 2>&1 &
+      echo $! > .next/mailhog.pid || true
+      sleep 0.5
+    elif command -v docker >/dev/null 2>&1; then
+      # Try to start a Docker container for MailHog if Docker is available
+      if docker info >/dev/null 2>&1; then
+        # Avoid starting another container if one with the same name exists
+        if ! docker ps --filter "name=mailhog_dev" --format '{{.Names}}' | grep -q mailhog_dev; then
+          echo "[clean_and_dev] Starting MailHog via Docker (mailhog_dev)"
+          docker run --rm -d -p ${MAILHOG_PORT}:1025 -p ${MAILHOG_UI_PORT}:8025 --name mailhog_dev mailhog/mailhog >/dev/null 2>&1 || true
+        else
+          echo "[clean_and_dev] mailhog_dev container already running"
+        fi
+      else
+        echo "[clean_and_dev] Docker not available or daemon not running — cannot start MailHog automatically"
+      fi
+    else
+      echo "[clean_and_dev] No MailHog binary or Docker available — please run MailHog manually if you need SMTP capture"
+    fi
+  else
+    echo "[clean_and_dev] MailHog already running on port $MAILHOG_PORT"
+  fi
+fi
+
 # If we have a pidfile from our dev:background helper, try to kill it.
 PIDFILE=".next/dev-server.pid"
 if [ -f "$PIDFILE" ]; then

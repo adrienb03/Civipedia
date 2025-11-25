@@ -35,20 +35,10 @@ export default function RequestResetPage() {
 
       // In development mode we may get back a mock resetUrl; show it clearly
       if (data?.info?.resetUrl) {
+        // In dev we may expose the reset URL for debugging, but do NOT auto-redirect.
+        // Display the URL so developers can copy/click it manually; this avoids bypassing email confirmation.
         const url = String(data.info.resetUrl)
         setResetUrl(url)
-        // Auto-redirect in dev for convenience: open the reset link so user can set a new password immediately
-        if (process.env.NODE_ENV !== 'production') {
-          try {
-            // small delay so the user sees the confirmation message briefly
-            setTimeout(() => {
-              window.location.href = url
-            }, 600)
-          } catch (e) {
-            // ignore if window not available
-            console.debug('Auto-redirect to resetUrl failed', e)
-          }
-        }
       }
     } catch (e) {
       setMessage('Erreur lors de la demande. Réessayez.')

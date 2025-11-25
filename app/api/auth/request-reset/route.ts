@@ -88,8 +88,12 @@ export async function POST(request: Request) {
 		// Send email (mock if no key)
 		const sendRes = await sendResetEmail(user.email, token)
 
-		// For security, return generic OK message. In dev the mailer mock logs the token.
-		return NextResponse.json({ ok: true, info: process.env.NODE_ENV !== 'production' ? sendRes.info : undefined })
+		// For security, return generic OK message. Do NOT expose the reset URL/token in API
+		// responses by default (even in dev) to avoid bypassing email-based confirmation.
+		// Developers can opt-in to receive the resetUrl in the response by setting
+		// EXPOSE_RESET_URL_IN_RESPONSE=1 in their env (only for local debugging).
+		const expose = process.env.EXPOSE_RESET_URL_IN_RESPONSE === '1'
+		return NextResponse.json({ ok: true, info: expose ? sendRes.info : undefined })
 	} catch (e) {
 		console.error('request-reset error:', e)
 		return NextResponse.json({ ok: true })
