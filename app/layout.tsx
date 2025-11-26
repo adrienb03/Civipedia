@@ -67,8 +67,12 @@ export default async function RootLayout({
         organization: u.organization ?? null,
       }
     } else {
-      // If the cookie pointed to a missing user, clear it to avoid stale state
-      cookieStore.delete('user_id')
+      // If the cookie pointed to a missing user, do not attempt to modify cookies
+      // here because cookie mutation is only allowed in Server Actions or Route
+      // Handlers. Instead, leave the cookie intact (it will be ignored) or use
+      // the logout API (`/api/auth/logout`) from the client to clear it if
+      // desired.
+      console.debug('Stale user_id cookie detected; not deleting from layout')
     }
   }
 
