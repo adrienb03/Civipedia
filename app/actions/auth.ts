@@ -123,6 +123,21 @@ export async function login(state: FormState, formData: FormData) {
     // Normaliser l'email comme lors du signup (lowercase + trim)
     const emailNormalized = (email || '').toString().trim().toLowerCase()
 
+    // If a recent password reset occurred, enforce that the email used to log in
+    // matches the account email that was reset. This guards against using a
+    // different email for login after resetting another account's password.
+    const cookieStore = await cookies()
+    try {
+      const recentReset = cookieStore.get('recent_reset_email')?.value
+      if (recentReset && recentReset !== emailNormalized) {
+        return {
+          message: "Veuillez saisir l'adresse e-mail utilisée lors de la création du compte."
+        }
+      }
+    } catch (e) {
+      // ignore cookie read errors — fall back to normal flow
+    }
+
     const user = await db
       .select()
       .from(users)
@@ -143,10 +158,11 @@ export async function login(state: FormState, formData: FormData) {
       }
     }
 
-    const cookieStore = await cookies()
     // Après vérification des identifiants, définir la cookie de session
     console.log('Server action login: setting auth cookies for user', user[0].id)
     await setAuthCookies(cookieStore, { id: user[0].id, name: user[0].name })
+    // Clear the temporary recent_reset_email cookie after successful login
+    try { cookieStore.delete('recent_reset_email') } catch (e) { /* ignore */ }
 
   } catch (error) {
     console.error('Error during login:', error)

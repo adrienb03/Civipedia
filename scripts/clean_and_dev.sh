@@ -95,6 +95,13 @@ if [ -f .next/dev/lock ]; then
 fi
 
 echo "[clean_and_dev] Starting Next dev on port $PORT"
+# Ensure local DB tables exist before starting dev server
+if command -v node >/dev/null 2>&1; then
+  echo "[clean_and_dev] Ensuring local DB tables (scripts/init_db.js)"
+  node ./scripts/init_db.js || echo "[clean_and_dev] init_db script failed (continuing)"
+else
+  echo "[clean_and_dev] node not found: cannot run init_db.js. Skipping DB init."
+fi
 # Run the local next binary directly to avoid recursively calling `npm run dev`.
 # Prefer the local project binary if available, otherwise fall back to global `next`.
 if [ -x "./node_modules/.bin/next" ]; then

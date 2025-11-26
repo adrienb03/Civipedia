@@ -72,8 +72,9 @@ export async function POST(request: Request) {
 		// Find user by email (case-insensitive)
 		const rows = await db.select().from(users).where(eq(users.email, identifierNormalized)).limit(1)
 		if (rows.length === 0) {
-			// Respond generically to avoid user enumeration
-			return NextResponse.json({ ok: true })
+			// Return an explicit error per project requirement: inform the user
+			// when the entered email does not match any account.
+			return NextResponse.json({ error: 'not_found', message: "Cet email n'est pas le même que celui utilisé pour la création du compte." }, { status: 400 })
 		}
 
 		const user = rows[0]

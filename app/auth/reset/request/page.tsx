@@ -30,8 +30,13 @@ export default function RequestResetPage() {
         body: JSON.stringify({ identifier, recaptchaToken }),
       })
       const data = await res.json()
-      // Generic message shown to user to avoid user enumeration
-      setMessage('Si ce compte existe, vous recevrez un e-mail avec les instructions.')
+      // If the server returned an explicit error (email not found), show it to the user.
+      if (data?.error && data?.message) {
+        setMessage(String(data.message))
+      } else {
+        // Default success message
+        setMessage('Si ce compte existe, vous recevrez un e-mail avec les instructions.')
+      }
 
       // In development mode we may get back a mock resetUrl; show it clearly
       if (data?.info?.resetUrl) {
