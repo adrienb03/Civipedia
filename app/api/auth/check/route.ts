@@ -21,7 +21,12 @@ export async function GET() {
       .select({
         id: users.id,
         name: users.name,
-        email: users.email
+        email: users.email,
+        pseudo: users.pseudo,
+        first_name: users.first_name,
+        last_name: users.last_name,
+        phone: users.phone,
+        organization: users.organization,
       })
       .from(users)
       .where(eq(users.id, userId))
@@ -40,7 +45,12 @@ export async function GET() {
     return NextResponse.json({
       id: user.id.toString(),
       name: user.name,
-      email: user.email
+      email: user.email,
+      pseudo: user.pseudo ?? null,
+      first_name: user.first_name ?? null,
+      last_name: user.last_name ?? null,
+      phone: user.phone ?? null,
+      organization: user.organization ?? null,
     })
 
   } catch (error) {

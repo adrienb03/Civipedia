@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies()
     await setAuthCookies(cookieStore, { id: user.id, name: user.name })
 
-    return NextResponse.json({ ok: true, id: String(user.id), name: user.name, email: user.email })
+    return NextResponse.json({ ok: true, id: String(user.id), name: user.name, email: user.email, pseudo: user.pseudo ?? null, first_name: user.first_name ?? null, last_name: user.last_name ?? null, phone: user.phone ?? null, organization: user.organization ?? null })
   } catch (err) {
     console.error('test-login error', err)
     return NextResponse.json({ error: 'server' }, { status: 500 })

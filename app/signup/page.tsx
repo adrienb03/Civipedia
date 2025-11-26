@@ -74,24 +74,56 @@ export default function SignupPage() {
             Rejoignez Civipedia dès aujourd'hui
           </p>
 
+          {state?.message && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
+              {state.message}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Champ Nom */}
+            {/* Pseudo */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nom complet
+              <label htmlFor="pseudo" className="block text-sm font-medium text-gray-700 mb-2">
+                Pseudo
               </label>
-              <input 
-                id="name" 
-                name="name" 
-                placeholder="Votre nom complet" 
+              <input
+                id="pseudo"
+                name="pseudo"
+                placeholder="Votre pseudo"
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
-              {clientErrors?.name && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.name}</p>
-              )}
-              {state?.errors?.name && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.name}</p>
-              )}
+              {clientErrors?.pseudo && <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.pseudo}</p>}
+              {state?.errors?.pseudo && <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.pseudo}</p>}
+            </div>
+
+            {/* Prénom */}
+            <div>
+              <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                Prénom
+              </label>
+              <input
+                id="first_name"
+                name="first_name"
+                placeholder="Votre prénom"
+                className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+              />
+              {clientErrors?.first_name && <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.first_name}</p>}
+              {state?.errors?.first_name && <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.first_name}</p>}
+            </div>
+
+            {/* Nom */}
+            <div>
+              <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                Nom
+              </label>
+              <input
+                id="last_name"
+                name="last_name"
+                placeholder="Votre nom"
+                className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+              />
+              {clientErrors?.last_name && <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.last_name}</p>}
+              {state?.errors?.last_name && <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.last_name}</p>}
             </div>
 
             {/* Champ Email */}
@@ -99,18 +131,14 @@ export default function SignupPage() {
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Adresse email
               </label>
-              <input 
-                id="email" 
-                name="email" 
-                placeholder="votre@email.com" 
+              <input
+                id="email"
+                name="email"
+                placeholder="votre@email.com"
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
-              {clientErrors?.email && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>
-              )}
-              {state?.errors?.email && (
-                <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.email}</p>
-              )}
+              {clientErrors?.email && <p className="text-red-500 text-sm mt-2 ml-2">{clientErrors.email}</p>}
+              {state?.errors?.email && <p className="text-red-500 text-sm mt-2 ml-2">{state.errors.email}</p>}
             </div>
 
             {/* Champ Mot de passe */}
@@ -118,10 +146,10 @@ export default function SignupPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Mot de passe
               </label>
-              <input 
-                id="password" 
-                name="password" 
-                type="password" 
+              <input
+                id="password"
+                name="password"
+                type="password"
                 placeholder="Votre mot de passe"
                 className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
               />
@@ -145,6 +173,32 @@ export default function SignupPage() {
                   </ul>
                 </div>
               )}
+            </div>
+
+            {/* Téléphone (optionnel) */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Téléphone (optionnel)
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                placeholder="(+33) 6 12 34 56 78"
+                className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            {/* Organisation / Entreprise (optionnel) */}
+            <div>
+              <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-2">
+                Organisation / Entreprise (optionnel)
+              </label>
+              <input
+                id="organization"
+                name="organization"
+                placeholder="Nom de l'organisation"
+                className="w-full p-4 text-lg border-0 rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-gray-900 placeholder-gray-400"
+              />
             </div>
 
             {/* Bouton d'inscription */}

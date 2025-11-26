@@ -12,6 +12,11 @@ interface UserData {
   id: string
   name: string
   email: string
+  pseudo?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  phone?: string | null
+  organization?: string | null
 }
 
 export default function ProfilePage() {
@@ -94,24 +99,37 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
                 <label className="block text-sm font-medium text-gray-500 mb-1">
-                  Nom complet
+                  Pseudo
                 </label>
-                <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+                <p className="text-lg font-semibold text-gray-900">{user.pseudo ?? user.name}</p>
               </div>
 
               <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
-                <label className="block text-sm font-medium text-gray-500 mb-1">
-                  Adresse email
-                </label>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Prénom</label>
+                <p className="text-lg font-semibold text-gray-900">{user.first_name ?? '-'}</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
+                <label className="block text-sm font-medium text-gray-500 mb-1">Nom</label>
+                <p className="text-lg font-semibold text-gray-900">{user.last_name ?? '-'}</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
+                <label className="block text-sm font-medium text-gray-500 mb-1">Adresse email</label>
                 <p className="text-lg font-semibold text-gray-900">{user.email}</p>
               </div>
 
               <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
-                <label className="block text-sm font-medium text-gray-500 mb-1">
-                  ID utilisateur
-                </label>
-                <p className="text-lg font-semibold text-gray-900">{user.id}</p>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Téléphone</label>
+                <p className="text-lg font-semibold text-gray-900">{user.phone ?? '-'}</p>
               </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
+                <label className="block text-sm font-medium text-gray-500 mb-1">Organisation</label>
+                <p className="text-lg font-semibold text-gray-900">{user.organization ?? '-'}</p>
+              </div>
+
+              {/* ID utilisateur supprimé : on n'affiche plus l'identifiant pour des raisons de confidentialité */}
             </div>
 
             {/* Boutons d'action */}

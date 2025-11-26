@@ -1,0 +1,7 @@
+qdrant-client
+llama-index
+transformers
+torch
+sentence-transformers
+accelerate
+python-dotenv

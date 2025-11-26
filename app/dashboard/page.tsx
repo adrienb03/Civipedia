@@ -72,14 +72,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Message de bienvenue avec les VRAIES données */}
+        {/* Message de bienvenue : n'afficher que le pseudo pour être concis */}
         {sessionUser && (
           <div className="text-center mb-6">
             <p className="text-gray-600 text-lg">
-              Bienvenue, <span className="font-semibold text-blue-600">{sessionUser.name}</span> !
-            </p>
-            <p className="text-gray-500 text-sm">
-              {sessionUser.email}
+              Bienvenue, <span className="font-semibold text-blue-600">{(sessionUser as any).pseudo ?? sessionUser.name}</span> !
             </p>
           </div>
         )}
@@ -173,14 +170,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Message pour les utilisateurs connectés */}
-          {!response && (
-            <div className="text-center pt-6">
-              <p className="text-gray-500 text-sm">
-                Utilisez le moteur de recherche pour explorer la base de connaissances Civipedia
-              </p>
-            </div>
-          )}
+          {/* Message pour les utilisateurs connectés (supprimé) */}
         </div>
       </div>
     </main>

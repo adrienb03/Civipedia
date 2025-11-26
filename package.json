@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "bash ./scripts/clean_and_dev.sh",
+    "mailhog": "docker run --rm -p 1025:1025 -p 8025:8025 mailhog/mailhog",
+    "migrate": "node scripts/migrate_add_user_fields.js",
+    "dev:background": "nohup npm run dev > .next/dev-server.log 2>&1 & echo $! > .next/dev-server.pid",
+    "dev:clean": "bash scripts/clean_and_dev.sh",
+    "dev:background:clean": "nohup bash scripts/clean_and_dev.sh > .next/dev-server.log 2>&1 & echo $! > .next/dev-server.pid",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+  "@sendgrid/mail": "^8.1.6",
+  "nodemailer": "^6.9.4",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.4.1",
