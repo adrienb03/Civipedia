@@ -14,13 +14,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-  "@sendgrid/mail": "^8.1.6",
-  "nodemailer": "^6.9.4",
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.4.1",
+    "better-sqlite3": "^12.4.6",
     "drizzle-orm": "^0.44.7",
     "next": "16.0.1",
+    "nodemailer": "^6.9.4",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "swr": "^2.3.6"
