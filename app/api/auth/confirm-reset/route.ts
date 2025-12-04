@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     // Optionally: invalidate existing sessions (not implemented centrally here)
 
     try {
-      const cookieStore = cookies()
+      const cookieStore = await cookies()
       if (userEmail) {
         cookieStore.set('recent_reset_email', String(userEmail), { httpOnly: true, path: '/', maxAge: 60 * 5, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' })
       }

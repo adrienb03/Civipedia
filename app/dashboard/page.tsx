@@ -31,14 +31,18 @@ export default function Dashboard() {
     setResponse("");
 
     try {
-      const res = await fetch("/api/search", {
+      const res = await fetch("http://127.0.0.1:8000/ask", {  // <- ton backend FastAPI
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({
+          text: query,        // le texte de la question
+          collection: "knowledge_base_civipedia", // nom de la collection Qdrant
+          n: 1                // nombre de réponses
+        }),
       });
 
       const data = await res.json();
-      setResponse(data.answer);
+      setResponse(data.answer.response); // la vraie réponse venant de Qdrant/Mistral
     } catch (error) {
       console.error("Erreur:", error);
       setResponse("Erreur lors de la recherche.");
