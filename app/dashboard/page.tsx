@@ -3,6 +3,7 @@
 // Page: Dashboard — zone utilisateur protégée
 // Fonction pour afficher le tableau de bord de l'utilisateur
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AuthButtons from '../components/AuthButtons';
 import useSession from '@/lib/hooks/useSession'
@@ -19,6 +20,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
   const { user, isLoading } = useSession()
+
+  const router = useRouter();
 
   // keep local typed alias for template
   const sessionUser = user as UserData | null
@@ -163,6 +166,21 @@ export default function Dashboard() {
                 </svg>
               </div>
               <span className="text-xs">Dicter</span>
+            </button>
+
+            {/* Bouton Contribuer - envoie vers la page de dépôt */}
+            <button
+              onClick={() => { router.push('/contribuer'); handleToolClick('Contribuer'); }}
+              aria-label="Contribuer"
+              className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center"
+            >
+              <div className="w-6 h-6 mb-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M3 7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                  <path d="M3 7h6l2 2" opacity="0" />
+                </svg>
+              </div>
+              <span className="text-xs">Contribuer</span>
             </button>
           </div>
 
