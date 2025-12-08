@@ -27,5 +27,6 @@ def ask(q: Question):
     answer = response(q.text, q.collection, q.n)
     return {"answer": answer}
 
+# uvicorn test_civi_api:app --reload
 # source .venv/bin/activate
 # npm run dev:tmux      
