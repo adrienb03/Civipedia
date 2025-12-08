@@ -28,6 +28,32 @@ export async function POST(request: Request) {
 
     // Utilisateur connecté -> autorisé sans limite
     if (userId) {
+      // Try to proxy to the Python FastAPI backend which provides the vector search.
+      try {
+        const resp = await fetch(process.env.PYTHON_API_URL ?? 'http://127.0.0.1:8000/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: query, collection: 'knowledge_base_civipedia', n: 2 }),
+        })
+        if (resp.ok) {
+          const data = await resp.json()
+          // Normalize Python backend response: it may return an object with
+          // { answer: { response, source_nodes, metadata } } — extract the
+          // textual part so the frontend receives a string under `answer`.
+          let answerText: string
+          if (typeof data?.answer === 'string') {
+            answerText = data.answer
+          } else if (data?.answer && typeof data.answer === 'object') {
+            answerText = data.answer.response ?? data.answer.text ?? JSON.stringify(data.answer)
+          } else {
+            answerText = ''
+          }
+          return NextResponse.json({ answer: answerText, ...('remaining' in data ? { remaining: data.remaining } : {}) })
+        }
+        console.warn('Python API returned non-OK status', resp.status)
+      } catch (e) {
+        console.warn('Could not reach Python API, falling back to simulated response', e)
+      }
       return NextResponse.json({ answer: `Réponse simulée pour: ${query}` })
     }
 
@@ -60,6 +86,32 @@ export async function POST(request: Request) {
     }
 
     const remaining = Math.max(0, MAX_ANON_REQUESTS - count)
+
+    // For anonymous users, also try to proxy to Python API but include remaining counter.
+    try {
+      const resp = await fetch(process.env.PYTHON_API_URL ?? 'http://127.0.0.1:8000/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: query, collection: 'knowledge_base_civipedia', n: 2 }),
+      })
+      if (resp.ok) {
+        const data = await resp.json()
+        let answerText: string
+        if (typeof data?.answer === 'string') {
+          answerText = data.answer
+        } else if (data?.answer && typeof data.answer === 'object') {
+          answerText = data.answer.response ?? data.answer.text ?? JSON.stringify(data.answer)
+        } else {
+          answerText = ''
+        }
+        // merge remaining info for frontend usage
+        return NextResponse.json({ answer: answerText, remaining })
+      }
+      console.warn('Python API returned non-OK status for anonymous request', resp.status)
+    } catch (e) {
+      console.warn('Could not reach Python API for anonymous request, falling back to simulated response', e)
+    }
+
     return NextResponse.json({ answer: `Réponse simulée pour: ${query}`, remaining })
   } catch (error) {
     console.error('Error in /api/search:', error)

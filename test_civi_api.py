@@ -27,3 +27,5 @@ def ask(q: Question):
     answer = response(q.text, q.collection, q.n)
     return {"answer": answer}
 
+# source .venv/bin/activate
+# npm run dev:tmux      
