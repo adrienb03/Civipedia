@@ -1,6 +1,6 @@
 INFO:     Will watch for changes in these directories: ['/Users/adrienbuecher/Documents/IMT-S3/Entreprise/civipedia']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [80150] using WatchFiles
+INFO:     Started reloader process [1959] using WatchFiles
 huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
 To disable this warning, you can either:
 	- Avoid using `tokenizers` before the fork if possible
@@ -9,9 +9,15 @@ huggingface/tokenizers: The current process just got forked, after parallelism h
 To disable this warning, you can either:
 	- Avoid using `tokenizers` before the fork if possible
 	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
-INFO:     Started server process [80184]
+INFO:     Started server process [1995]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-Le titre du document est :
-**"Investir dans l’avenir : rebâtir un service public de l’enseignement supérieur."**
-INFO:     127.0.0.1:61182 - "POST /ask HTTP/1.1" 200 OK
+Le titre du document est **"Investir dans l’avenir : rebâtir un service public de l’enseignement supérieur"**.
+INFO:     127.0.0.1:62340 - "POST /ask HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1995]
+INFO:     Stopping reloader process [1959]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

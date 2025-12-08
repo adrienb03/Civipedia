@@ -58,10 +58,14 @@ export async function POST(request: Request) {
     }
 
     // Anonyme: s'identifier via cookie `anon_id` (création si absent)
-    let anonId = cookieStore.get('anon_id')?.value
-    if (!anonId) {
-      anonId = genAnonId()
-      try { cookieStore.set('anon_id', anonId, { path: '/', maxAge: 60 * 60 * 24 * 365 }) } catch (e) { if (process.env.NODE_ENV !== 'production') console.debug('Could not set anon_id cookie', e) }
+    const existingAnon = cookieStore.get('anon_id')?.value
+    const anonId = existingAnon ?? genAnonId()
+    if (!existingAnon) {
+      try {
+        cookieStore.set('anon_id', anonId, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      } catch (e) {
+        if (process.env.NODE_ENV !== 'production') console.debug('Could not set anon_id cookie', e)
+      }
     }
 
     // Chercher le compteur côté serveur

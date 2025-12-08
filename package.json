@@ -9,6 +9,7 @@
     "dev:background": "nohup npm run dev > .next/dev-server.log 2>&1 & echo $! > .next/dev-server.pid",
     "dev:tmux": "bash ./scripts/dev.sh",
     "dev:clean": "bash scripts/clean_and_dev.sh",
+    "uvicorn:safe": "bash ./scripts/uvicorn_safe.sh",
     "dev:background:clean": "nohup bash scripts/clean_and_dev.sh > .next/dev-server.log 2>&1 & echo $! > .next/dev-server.pid",
     "build": "next build",
     "start": "next start",
