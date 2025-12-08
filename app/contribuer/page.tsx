@@ -30,7 +30,7 @@ export default function ContribuerPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!files || files.length === 0) return setStatus("Aucun fichier sélectionné.");
+    if (!files || files.length === 0) return; // button is disabled until files are selected
 
     setStatus("Envoi en cours...");
 
@@ -61,18 +61,62 @@ export default function ContribuerPage() {
     }
   };
 
+  if (user?.email === 'admin@gmail.com') {
+    // Admin-only view: list uploaded files, no upload controls
+    return (
+      <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow">
+        <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Documents des contributeurs</h1>
+
+        {adminFiles.length === 0 ? (
+          <p className="text-sm text-gray-500 mt-2">Aucun fichier trouvé.</p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+            {adminFiles.map((f) => (
+              <li key={f.name} className="flex items-center justify-between">
+                <div>
+                  <strong className="mr-2">{f.name}</strong>
+                  <span className="text-xs text-gray-500">{Math.round(f.size/1024)} KB</span>
+                </div>
+                <div>
+                  <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-blue-600 hover:underline mr-4">Télécharger</a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )
+  }
+
+  // Non-admin view: upload UI
   return (
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow">
-      <h1 className="text-2xl font-semibold mb-4">Contribuer — déposer des PDF</h1>
+      <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Contribuer : déposer des PDF</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Sélectionner des fichiers PDF</label>
-          <input type="file" accept="application/pdf" multiple onChange={handleChange} className="mt-2" />
+          <input id="file-input" type="file" accept="application/pdf" multiple onChange={handleChange} className="hidden" />
+          <label htmlFor="file-input" className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-700">
+            Choisir les fichiers
+          </label>
+
+          {files && files.length > 0 && (
+            <div className="mt-2 text-sm text-gray-700">
+              {Array.from(files).map((f, i) => (
+                <div key={i}>{f.name}</div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Téléverser</button>
+          <button
+            type="submit"
+            disabled={!(files && files.length > 0)}
+            className={`bg-blue-600 text-white px-4 py-2 rounded ${!(files && files.length > 0) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+          >
+            Téléverser
+          </button>
         </div>
       </form>
 
@@ -86,30 +130,6 @@ export default function ContribuerPage() {
               <li key={i}><strong>{f.name}</strong> — {f.path}</li>
             ))}
           </ul>
-        </div>
-      )}
-
-      {/* Section visible uniquement pour l'admin */}
-      {user?.email === 'admin@gmail.com' && (
-        <div className="mt-8">
-          <h2 className="text-lg font-medium">Documents téléversés (admin)</h2>
-          {adminFiles.length === 0 ? (
-            <p className="text-sm text-gray-500 mt-2">Aucun fichier trouvé.</p>
-          ) : (
-            <ul className="mt-3 space-y-2 text-sm text-gray-700">
-              {adminFiles.map((f) => (
-                <li key={f.name} className="flex items-center justify-between">
-                  <div>
-                    <strong className="mr-2">{f.name}</strong>
-                    <span className="text-xs text-gray-500">{Math.round(f.size/1024)} KB</span>
-                  </div>
-                  <div>
-                    <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-blue-600 hover:underline mr-4">Télécharger</a>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       )}
     </div>
