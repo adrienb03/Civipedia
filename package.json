@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bash ./scripts/clean_and_dev.sh",
+    "dev:win": "node scripts/init_db.js && next dev",
     "mailhog": "docker run --rm -p 1025:1025 -p 8025:8025 mailhog/mailhog",
     "migrate": "node scripts/migrate_add_user_fields.js",
     "dev:background": "nohup npm run dev > .next/dev-server.log 2>&1 & echo $! > .next/dev-server.pid",
