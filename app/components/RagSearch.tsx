@@ -4,6 +4,7 @@
 "use client"
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function RagSearch() {
   const [query, setQuery] = useState("");
@@ -47,6 +48,9 @@ export default function RagSearch() {
   const handleToolClick = (toolName: string) => {
     console.log(`Outil cliqué: ${toolName}`);
   };
+
+  // Navigation helper for client-side routing
+  const router = useRouter();
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
@@ -96,6 +100,16 @@ export default function RagSearch() {
             </svg>
           </div>
           <span className="text-xs">Fichier</span>
+        </button>
+
+        <button onClick={() => { router.push('/contribuer'); handleToolClick('Contribuer'); }} aria-label="Contribuer" className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center">
+          <div className="w-6 h-6 mb-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M3 7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+              <path d="M3 7h6l2 2" opacity="0" />
+            </svg>
+          </div>
+          <span className="text-xs">Contribuer</span>
         </button>
 
         <button onClick={() => handleToolClick("Dicter")} className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 flex flex-col items-center">
