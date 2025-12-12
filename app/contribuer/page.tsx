@@ -65,7 +65,40 @@ export default function ContribuerPage() {
     // Admin-only view: list uploaded files, no upload controls
     return (
       <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow">
-        <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Documents des contributeurs</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Documents des contributeurs</h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push('/')}
+              className="inline-flex items-center bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+            >
+              Moteur
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!confirm('Voulez-vous vraiment supprimer tous les documents téléversés ? Cette action est irréversible.')) return;
+                try {
+                  setStatus('Suppression en cours...');
+                  const res = await fetch('/api/uploads/clear', { method: 'DELETE' });
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data?.error || 'Erreur');
+                  setStatus(`Suppression terminée (${data.deleted || 0} fichiers).`);
+                  // refresh list
+                  const listRes = await fetch('/api/uploads/list');
+                  const listData = await listRes.json();
+                  setAdminFiles(listData?.files || []);
+                } catch (e: any) {
+                  console.error(e);
+                  setStatus(e?.message || 'Erreur lors de la suppression.');
+                }
+              }}
+              className="ml-4 inline-flex items-center bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700"
+            >
+              Vider
+            </button>
+          </div>
+        </div>
 
         {adminFiles.length === 0 ? (
           <p className="text-sm text-gray-500 mt-2">Aucun fichier trouvé.</p>
