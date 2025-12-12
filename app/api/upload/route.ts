@@ -1,5 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { cookies } from 'next/headers'
+import { getSessionFromCookieStore } from '@/lib/server/auth'
+import { db } from '@/db'
+import { users } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 export const runtime = 'nodejs';
 
@@ -67,6 +72,19 @@ export async function POST(req: Request) {
 
     const saved: Array<{ name: string; path: string; drive?: any }> = [];
 
+    // Resolve uploader from session if present
+    let uploaderEmail: string | null = null
+    try {
+      const cookieStore = cookies()
+      const userId = await getSessionFromCookieStore(cookieStore)
+      if (userId) {
+        const userData = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1)
+        if (userData && userData.length > 0) uploaderEmail = userData[0].email
+      }
+    } catch (e) {
+      // ignore session resolution errors
+    }
+
     for (const f of files) {
       // `f` is a File object from the Web API
       // Type of f may not be strongly typed in Node runtime
@@ -80,6 +98,31 @@ export async function POST(req: Request) {
       await fs.promises.writeFile(dest, buffer);
 
       const driveResult = await maybeUploadToGoogleDrive(dest, file.name || safeName);
+
+      // Update metadata.json with uploader info and initial status
+      const metaPath = path.join(uploadsDir, 'metadata.json')
+      let metadata: Record<string, any> = {}
+      try {
+        const raw = await fs.promises.readFile(metaPath, 'utf-8')
+        metadata = JSON.parse(raw || '{}')
+      } catch (e) {
+        metadata = {}
+      }
+
+      metadata[safeName] = {
+        originalName: file.name || safeName,
+        uploaderEmail: uploaderEmail,
+        uploadedAt: Date.now(),
+        status: metadata[safeName]?.status || 'pending',
+        reviewedBy: metadata[safeName]?.reviewedBy || null,
+        reviewedAt: metadata[safeName]?.reviewedAt || null,
+      }
+
+      try {
+        await fs.promises.writeFile(metaPath, JSON.stringify(metadata, null, 2), 'utf-8')
+      } catch (e) {
+        console.warn('Could not write upload metadata', e)
+      }
 
       saved.push({ name: file.name || safeName, path: `/uploads/${safeName}`, drive: driveResult });
     }

@@ -10,11 +10,12 @@ export default function ContribuerPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState<Array<{ name: string; path: string }>>([]);
   const { user, isLoading } = useSession()
-  const [adminFiles, setAdminFiles] = useState<Array<{ name: string; size: number; mtime: number }>>([]);
+  const [adminFiles, setAdminFiles] = useState<Array<{ name: string; size: number; mtime: number; status?: string; reviewedBy?: string | null; reviewedAt?: number | null }>>([]);
+  const allowedAdmins = ['admin@gmail.com', 'admin2@gmail.com']
 
   useEffect(() => {
     // If user is admin, fetch list of uploaded files
-    if (user?.email === 'admin@gmail.com') {
+    if (user?.email && allowedAdmins.includes(user.email)) {
       fetch('/api/uploads/list')
         .then((r) => r.json())
         .then((data) => {
@@ -61,10 +62,11 @@ export default function ContribuerPage() {
     }
   };
 
-  if (user?.email === 'admin@gmail.com') {
+  if (user?.email && allowedAdmins.includes(user.email)) {
     // Admin-only view: list uploaded files, no upload controls
     return (
       <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow">
+        
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Documents des contributeurs</h1>
           <div className="flex items-center gap-3">
@@ -105,13 +107,69 @@ export default function ContribuerPage() {
         ) : (
           <ul className="mt-3 space-y-2 text-sm text-gray-700">
             {adminFiles.map((f) => (
-              <li key={f.name} className="flex items-center justify-between">
+              <li
+                key={f.name}
+                className={`flex items-center justify-between ${f.status === 'accepted' ? 'bg-green-50 border border-green-200 rounded p-3' : (f.status === 'refused' ? 'bg-red-50 border border-red-200 rounded p-3' : '')}`}
+              >
                 <div>
                   <strong className="mr-2">{f.name}</strong>
                   <span className="text-xs text-gray-500">{Math.round(f.size/1024)} KB</span>
+                          <div className="mt-1">
+                            <span className="text-xs mr-2">État: <strong>{(!f.status || f.status === 'pending') ? "Document en attente d'être traité" : (f.status === 'accepted' ? 'Accepté' : (f.status === 'refused' ? 'Refusé' : f.status))}</strong></span>
+                            {f.reviewedBy && <span className="text-xs text-gray-500"> — par {f.reviewedBy}</span>}
+                          </div>
                 </div>
-                <div>
-                  <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-blue-600 hover:underline mr-4">Télécharger</a>
+                <div className="flex items-center gap-3">
+                  <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-blue-600 hover:underline">Télécharger</a>
+                  {(!f.status || f.status === 'pending') && (
+                    <>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Marquer ${f.name} comme accepté ?`)) return
+                          try {
+                            setStatus('Mise à jour en cours...')
+                            const res = await fetch('/api/uploads/mark', { method: 'POST', body: JSON.stringify({ name: f.name, status: 'accepted' }), headers: { 'Content-Type': 'application/json' } })
+                            const data = await res.json()
+                            if (!res.ok) throw new Error(data?.error || 'Erreur')
+                            // refresh list
+                            const listRes = await fetch('/api/uploads/list')
+                            const listData = await listRes.json()
+                            setAdminFiles(listData?.files || [])
+                            setStatus('Mise à jour terminée.')
+                          } catch (e: any) {
+                            console.error(e)
+                            setStatus(e?.message || 'Erreur lors de la mise à jour.')
+                          }
+                        }}
+                        className="inline-flex items-center bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs border border-green-800"
+                      >
+                        Accepter
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Marquer ${f.name} comme refusé ?`)) return
+                          try {
+                            setStatus('Mise à jour en cours...')
+                            const res = await fetch('/api/uploads/mark', { method: 'POST', body: JSON.stringify({ name: f.name, status: 'refused' }), headers: { 'Content-Type': 'application/json' } })
+                            const data = await res.json()
+                            if (!res.ok) throw new Error(data?.error || 'Erreur')
+                            // refresh list
+                            const listRes = await fetch('/api/uploads/list')
+                            const listData = await listRes.json()
+                            setAdminFiles(listData?.files || [])
+                            setStatus('Mise à jour terminée.')
+                          } catch (e: any) {
+                            console.error(e)
+                            setStatus(e?.message || 'Erreur lors de la mise à jour.')
+                          }
+                        }}
+                        className="inline-flex items-center bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-xs"
+                      >
+                        Refuser
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             ))}

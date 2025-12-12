@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
     if (!userData || userData.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 401 })
 
     const user = userData[0]
-    if (user.email !== 'admin@gmail.com') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const allowedAdmins = ['admin@gmail.com', 'admin2@gmail.com']
+    if (!allowedAdmins.includes(user.email)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     // Robustly extract filename from the request URL as fallback if params are missing
     const url = new URL(request.url)

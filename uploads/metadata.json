@@ -1,0 +1,18 @@
+{
+  "1765568189338-CDC_V2.pdf": {
+    "originalName": "CDC_V2.pdf",
+    "uploaderEmail": "test@gmail.com",
+    "uploadedAt": 1765568189340,
+    "status": "accepted",
+    "reviewedBy": "admin@gmail.com",
+    "reviewedAt": 1765568215917
+  },
+  "1765568196351-CDC_V2.pdf": {
+    "originalName": "CDC_V2.pdf",
+    "uploaderEmail": "test@gmail.com",
+    "uploadedAt": 1765568196355,
+    "status": "refused",
+    "reviewedBy": "admin@gmail.com",
+    "reviewedAt": 1765568217530
+  }
+}
