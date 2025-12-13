@@ -53,7 +53,7 @@ export default function RagSearch() {
   // Navigation helper for client-side routing
   const router = useRouter();
 
-  const { user } = useSession()
+  const { user, isLoading } = useSession()
 
   // Cleanup any leftover legacy buttons that might be injected by an older bundle
   // This ensures logged-in pages don't show the old 5-button layout.
@@ -136,12 +136,15 @@ export default function RagSearch() {
 
       {!response && (
         <div className="text-center pt-6">
-          {remaining === null ? (
+          {!user && !isLoading ? (
             <p className="text-gray-500 text-sm">Connectez-vous pour accéder à toutes les fonctionnalités de Civipedia</p>
-          ) : remaining > 0 ? (
-            <p className="text-gray-500 text-sm">Il vous reste {remaining} recherche{remaining > 1 ? 's' : ''} avant de devoir vous connecter.</p>
           ) : (
-            <p className="text-gray-500 text-sm">Vous avez atteint la limite de recherches. <a href="/login" className="text-blue-600 hover:underline">Connectez-vous</a> pour continuer.</p>
+            // If the user is logged in, only show remaining/limit when it's explicitly provided
+            remaining === null ? null : (remaining > 0 ? (
+              <p className="text-gray-500 text-sm">Il vous reste {remaining} recherche{remaining > 1 ? 's' : ''} avant de devoir vous connecter.</p>
+            ) : (
+              <p className="text-gray-500 text-sm">Vous avez atteint la limite de recherches. <a href="/login" className="text-blue-600 hover:underline">Connectez-vous</a> pour continuer.</p>
+            ))
           )}
         </div>
       )}

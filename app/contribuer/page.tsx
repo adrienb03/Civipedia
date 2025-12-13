@@ -182,7 +182,17 @@ export default function ContribuerPage() {
   // Non-admin view: upload UI
   return (
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow">
-      <h1 className="text-2xl font-bold text-black mb-4" style={{ color: '#000' }}>Contribuer : déposer des PDF</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-black">Contribuer : déposer des PDF</h1>
+        <div>
+          <button
+            onClick={() => router.push('/')}
+            className="inline-flex items-center bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+          >
+            Moteur
+          </button>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
