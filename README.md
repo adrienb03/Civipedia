@@ -76,3 +76,16 @@ mailhog
 - After MailHog is running, copy `.env.local.example` to `.env.local` and run the app with `npm run dev`. Open `http://localhost:8025` to see emails.
 
 If a developer prefers not to run MailHog, they can still develop, but they won't receive the captured emails locally; in that case the server logs (in dev) will contain the `resetUrl` for convenience.
+
+
+## ⚠️ Dépannage et Problèmes Connus
+
+### 1. Erreur 'ReferenceError: DOMMatrix is not defined'
+
+Cette erreur survient lorsque des librairies côté serveur (comme `pdf-parse`) essaient d'accéder à des objets du DOM (navigateur) dans un environnement Node.js pur.
+
+**Solution :**
+* **Méthode 1 (Idéale) :** Installer la librairie `canvas` comme polyfill.
+    * **Sur Linux/WSL :** Assurez-vous d'avoir les dépendances natives : `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
+    * Puis exécutez : `npm install canvas`
+* **Méthode 2 (Contournement) :** Utiliser l'Importation Dynamique. Si la Méthode 1 échoue, nous utilisons l'importation dynamique (`await import('...')`) pour charger la librairie uniquement au moment de l'exécution, ce qui résout le problème dans le code de la route `/api/upload`.
