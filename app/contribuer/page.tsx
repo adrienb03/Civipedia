@@ -33,6 +33,20 @@ export default function ContribuerPage() {
     e.preventDefault();
     if (!files || files.length === 0) return; // button is disabled until files are selected
 
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+
+      if (f.type !== "application/pdf") {
+          setStatus(`❌ ${f.name} n’est pas un PDF`);
+          return;
+      }
+
+      if (f.size > 10 * 1024 * 1024) {
+          setStatus(`❌ ${f.name} dépasse 10MB`);
+          return;
+      }
+    }
+
     setStatus("Envoi en cours...");
 
     const formData = new FormData();
@@ -46,7 +60,12 @@ export default function ContribuerPage() {
         body: formData,
       });
 
-      const data = await res.json();
+      const text = await res.text();
+
+
+      const data = JSON.parse(text)
+
+
       if (!res.ok) throw new Error(data?.error || "Erreur serveur");
 
       setUploaded(data.saved || []);
