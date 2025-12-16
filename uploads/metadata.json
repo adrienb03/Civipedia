@@ -78,5 +78,13 @@
     "status": "pending",
     "reviewedBy": null,
     "reviewedAt": null
+  },
+  "1765891529353-CDC_V2.pdf": {
+    "originalName": "CDC_V2.pdf",
+    "uploaderEmail": "test@gmail.com",
+    "uploadedAt": 1765891529359,
+    "status": "accepted",
+    "reviewedBy": "admin@gmail.com",
+    "reviewedAt": 1765891557861
   }
 }

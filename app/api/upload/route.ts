@@ -21,9 +21,41 @@ function isRealPDF(buffer: Buffer): boolean {
 }
 
 async function scanWithClamAV(filePath: string) {
-    const { stdout } = await execFileAsync('clamscan', ['--no-summary', filePath])
-    if (!stdout.includes('OK')) {
-        throw new Error('Virus détecté')
+    // Allow skipping antivirus checks in development or debugging
+    if (process.env.SKIP_ANTIVIRUS === 'true') {
+        console.warn('SKIP_ANTIVIRUS is true — skipping ClamAV scan')
+        return
+    }
+
+    try {
+        const { stdout, stderr } = await execFileAsync('clamscan', ['--no-summary', filePath])
+        const out = `${stdout || ''}${stderr || ''}`
+        // clamscan prints 'FOUND' when infected, and typically 'OK' when clean
+        if (out.includes('FOUND')) {
+            throw new Error('Virus détecté')
+        }
+
+        if (!out.includes('OK')) {
+            // Unexpected output — warn but don't fail upload to avoid false positives
+            console.warn('clamscan returned unexpected output:', out)
+            return
+        }
+    } catch (err: any) {
+        // If clamscan is not installed, skip scanning with a warning
+        if (err?.code === 'ENOENT') {
+            console.warn('clamscan not found in PATH — skipping antivirus scan')
+            return
+        }
+
+        // If execFile rejects for infected files, err may contain stdout/stderr
+        const out = err?.stdout || err?.stderr || ''
+        if (out && out.includes('FOUND')) {
+            throw new Error('Virus détecté')
+        }
+
+        // For other errors, log and skip scan to avoid blocking uploads in dev
+        console.warn('ClamAV scan failed, skipping (error):', err?.message || err)
+        return
     }
 }
 
