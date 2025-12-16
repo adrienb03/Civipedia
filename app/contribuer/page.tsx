@@ -122,24 +122,24 @@ export default function ContribuerPage() {
         </div>
 
         {adminFiles.length === 0 ? (
-          <p className="text-sm text-gray-500 mt-2">Aucun fichier trouvé.</p>
+          <p className="text-sm text-black mt-2">Aucun fichier trouvé.</p>
         ) : (
-          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+          <ul className="mt-3 space-y-2 text-sm text-black">
             {adminFiles.map((f) => (
               <li
                 key={f.name}
                 className={`flex items-center justify-between ${f.status === 'accepted' ? 'bg-green-50 border border-green-200 rounded p-3' : (f.status === 'refused' ? 'bg-red-50 border border-red-200 rounded p-3' : '')}`}
               >
                 <div>
-                  <strong className="mr-2">{f.name}</strong>
-                  <span className="text-xs text-gray-500">{Math.round(f.size/1024)} KB</span>
+                  <strong className="mr-2 text-black">{f.name}</strong>
+                  <span className="text-xs text-black">{Math.round(f.size/1024)} KB</span>
                           <div className="mt-1">
-                            <span className="text-xs mr-2">État: <strong>{(!f.status || f.status === 'pending') ? "Document en attente d'être traité" : (f.status === 'accepted' ? 'Accepté' : (f.status === 'refused' ? 'Refusé' : f.status))}</strong></span>
-                            {f.reviewedBy && <span className="text-xs text-gray-500"> — par {f.reviewedBy}</span>}
+                            <span className="text-xs mr-2 text-black">État: <strong>{(!f.status || f.status === 'pending') ? "Document en attente d'être traité" : (f.status === 'accepted' ? 'Accepté' : (f.status === 'refused' ? 'Refusé' : f.status))}</strong></span>
+                            {f.reviewedBy && <span className="text-xs text-black"> — par {f.reviewedBy}</span>}
                           </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-blue-600 hover:underline">Télécharger</a>
+                  <a href={`/api/uploads/${encodeURIComponent(f.name)}`} className="text-black hover:underline">Télécharger</a>
                   {(!f.status || f.status === 'pending') && (
                     <>
                       <button
@@ -221,7 +221,7 @@ export default function ContribuerPage() {
           </label>
 
           {files && files.length > 0 && (
-            <div className="mt-2 text-sm text-gray-700">
+            <div className="mt-2 text-sm text-black">
               {Array.from(files).map((f, i) => (
                 <div key={i}>{f.name}</div>
               ))}
@@ -240,12 +240,12 @@ export default function ContribuerPage() {
         </div>
       </form>
 
-      {status && <p className="mt-4 text-gray-700">{status}</p>}
+      {status && <p className="mt-4 text-black">{status}</p>}
 
       {uploaded.length > 0 && (
         <div className="mt-6">
           <h2 className="font-medium">Fichiers sauvegardés :</h2>
-          <ul className="mt-2 list-disc list-inside text-sm text-gray-700">
+          <ul className="mt-2 list-disc list-inside text-sm text-black">
             {uploaded.map((f, i) => (
               <li key={i}><strong>{f.name}</strong> — {f.path}</li>
             ))}
