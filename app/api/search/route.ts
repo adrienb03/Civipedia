@@ -41,6 +41,7 @@ export async function POST(request: Request) {
           // { answer: { response, source_nodes, metadata } } — extract the
           // textual part so the frontend receives a string under `answer`.
           let answerText: string
+          const sources = Array.isArray(data?.sources) ? data.sources : []
           if (typeof data?.answer === 'string') {
             answerText = data.answer
           } else if (data?.answer && typeof data.answer === 'object') {
@@ -48,13 +49,13 @@ export async function POST(request: Request) {
           } else {
             answerText = ''
           }
-          return NextResponse.json({ answer: answerText, ...('remaining' in data ? { remaining: data.remaining } : {}) })
+          return NextResponse.json({ answer: answerText, sources, ...('remaining' in data ? { remaining: data.remaining } : {}) })
         }
         console.warn('Python API returned non-OK status', resp.status)
       } catch (e) {
         console.warn('Could not reach Python API, falling back to simulated response', e)
       }
-      return NextResponse.json({ answer: `Réponse simulée pour: ${query}` })
+      return NextResponse.json({ answer: `Réponse simulée pour: ${query}`, sources: [] })
     }
 
     // Anonyme: s'identifier via cookie `anon_id` (création si absent)
@@ -101,6 +102,7 @@ export async function POST(request: Request) {
       if (resp.ok) {
         const data = await resp.json()
         let answerText: string
+        const sources = Array.isArray(data?.sources) ? data.sources : []
         if (typeof data?.answer === 'string') {
           answerText = data.answer
         } else if (data?.answer && typeof data.answer === 'object') {
@@ -109,14 +111,14 @@ export async function POST(request: Request) {
           answerText = ''
         }
         // merge remaining info for frontend usage
-        return NextResponse.json({ answer: answerText, remaining })
+        return NextResponse.json({ answer: answerText, sources, remaining })
       }
       console.warn('Python API returned non-OK status for anonymous request', resp.status)
     } catch (e) {
       console.warn('Could not reach Python API for anonymous request, falling back to simulated response', e)
     }
 
-    return NextResponse.json({ answer: `Réponse simulée pour: ${query}`, remaining })
+    return NextResponse.json({ answer: `Réponse simulée pour: ${query}`, sources: [], remaining })
   } catch (error) {
     console.error('Error in /api/search:', error)
     return NextResponse.json({ error: 'server_error', message: 'Erreur interne du serveur' }, { status: 500 })

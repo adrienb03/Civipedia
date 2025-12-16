@@ -10,6 +10,7 @@ import useSession from '@/lib/hooks/useSession'
 export default function RagSearch() {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
+  const [sources, setSources] = useState<Array<{ title?: string; author?: string; date?: string; download_url?: string }>>([]);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,20 +28,48 @@ export default function RagSearch() {
         body: JSON.stringify({ query }),
       });
 
-      const data = await res.json();
+        let data: any = null
+        try {
+          data = await res.json()
+        } catch (e) {
+          console.error('Failed to parse /api/search JSON response', e)
+          data = null
+        }
+
+        console.log('Debug /api/search response:', { status: res.status, body: data })
 
       if (res.status === 401 || data?.error === 'limit') {
         // Limite atteinte pour utilisateur anonyme
         setResponse(data?.message || 'Veuillez vous connecter pour continuer.')
+        setSources([])
         setRemaining(0)
         return
       }
 
-      setResponse(data.answer ?? '')
-      setRemaining(typeof data?.remaining === 'number' ? data.remaining : null)
+      try {
+        setResponse(data?.answer ?? '')
+        // Deduplicate sources by download_url or title to avoid repeated entries
+        const rawSources = Array.isArray(data?.sources) ? data.sources : []
+        const deduped = (() => {
+          const m = new Map<string, any>()
+          for (const s of rawSources) {
+            const key = (s?.download_url || s?.title || '').toString().trim().toLowerCase()
+            if (!m.has(key)) m.set(key, s)
+          }
+          return Array.from(m.values())
+        })()
+        setSources(deduped)
+        setRemaining(typeof data?.remaining === 'number' ? data.remaining : null)
+      } catch (e) {
+        console.error('Error handling search response:', e, data)
+        setResponse('Erreur lors du traitement de la réponse.')
+        setSources([])
+        setRemaining(null)
+      }
     } catch (error) {
       console.error("Erreur:", error);
       setResponse("Erreur lors de la recherche.");
+      setSources([])
     } finally {
       setLoading(false);
     }
@@ -131,6 +160,22 @@ export default function RagSearch() {
         <div className="mt-6 p-6 bg-white rounded-2xl shadow-md border border-gray-100">
           <h2 className="font-semibold text-gray-900 text-lg mb-3">Réponse :</h2>
           <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{response}</p>
+        </div>
+      )}
+
+      {sources && sources.length > 0 && (
+        <div className="mt-6 p-6 bg-white rounded-2xl shadow-md border border-gray-100">
+          <h3 className="font-semibold text-gray-900 text-md mb-3">Sources utilisées :</h3>
+          <ul className="space-y-3">
+            {sources.map((s, idx) => (
+              <li key={idx} className="text-gray-700">
+                <span className="mr-2">📄</span>
+                <a href={s.download_url ?? '#'} className="font-medium text-blue-600 hover:underline mr-2">{s.title ?? 'Document'}</a>
+                {s.author ? (<span className="text-sm text-gray-600">({s.author})</span>) : null}
+                {s.date ? (<span className="ml-2 text-sm text-gray-600">- {s.date}</span>) : null}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

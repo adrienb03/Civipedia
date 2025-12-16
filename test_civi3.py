@@ -8,6 +8,8 @@ from llama_index.core.schema import NodeWithScore
 from llama_index.core.retrievers import BaseRetriever
 from typing import List
 import os
+import json
+from urllib.parse import quote
 
 # Qdrant configuration: prefer environment variables but fall back to provided defaults.
 # You can override by setting `QDRANT_API_KEY` and `QDRANT_ENDPOINT` in the environment.
@@ -56,12 +58,86 @@ def preselect(prompt,collection,n_limit) :
 
 def response(prompt,collection,n_lim) :
     results = preselect(prompt,collection,n_lim)
+
+    # Build sources list from Qdrant point payloads (defensive extraction)
+    sources = []
+    pts = getattr(results, 'points', []) or []
+    for p in pts:
+        payload = getattr(p, 'payload', {}) or {}
+        # Try common field names for title / filename
+        title = payload.get('file_name') or payload.get('title') or payload.get('name') or None
+
+        # Try to parse node content JSON if present
+        if not title:
+            nc = payload.get('_node_content') or payload.get('node_content')
+            if isinstance(nc, str):
+                try:
+                    obj = json.loads(nc)
+                    title = (
+                        obj.get('extra_info', {}).get('file_name')
+                        or obj.get('metadata', {}).get('file_name')
+                        or obj.get('source')
+                        or obj.get('title')
+                    )
+                except Exception:
+                    pass
+
+        # Fallback to file path fields
+        file_path = payload.get('file_path') or payload.get('path') or payload.get('source') or payload.get('file_url')
+        if not title and file_path:
+            try:
+                title = os.path.basename(file_path)
+            except Exception:
+                title = None
+
+        if not title:
+            # Last resort: use point id as title
+            title = f"doc_{getattr(p, 'id', 'unknown')}"
+
+        # Extract date and author if available
+        date = payload.get('creation_date') or payload.get('date') or payload.get('created_at') or None
+        author = payload.get('author') or None
+
+        # Build download URL pointing to the Documents route
+        safe_name = title
+        download_url = f"/api/documents/download/{quote(safe_name)}"
+
+        sources.append({
+            'title': title,
+            'author': author,
+            'date': date,
+            'download_url': download_url,
+        })
+
+    # Build the answer text using the Retriever + LLM pipeline
     vector_store = QdrantVectorStore(client=qdrant_client,collection_name=collection)
-    nodes = vector_store.get_nodes([point.id for point in results.points])
+    nodes = vector_store.get_nodes([point.id for point in pts])
     retriever = CustomNodeRetriever(nodes)
     query_engine = RetrieverQueryEngine.from_args(retriever=retriever,llm=llm)
-    response = query_engine.query(prompt)
-    return response
+    resp = query_engine.query(prompt)
+
+    # Try to extract a plain text answer from the LlamaIndex response object.
+    # Handle several possible shapes: string, object with 'response' or 'text', etc.
+    answer_text = ''
+    try:
+        if isinstance(resp, str):
+            answer_text = resp
+        else:
+            # prefer common attributes
+            if hasattr(resp, 'response') and getattr(resp, 'response'):
+                answer_text = getattr(resp, 'response')
+            elif hasattr(resp, 'text') and getattr(resp, 'text'):
+                answer_text = getattr(resp, 'text')
+            else:
+                # fallback to string representation
+                answer_text = str(resp)
+    except Exception:
+        try:
+            answer_text = str(resp)
+        except Exception:
+            answer_text = ''
+
+    return {'answer': answer_text, 'sources': sources}
 
 question = "le titre du document"
 print(response(question,collection_name,2))

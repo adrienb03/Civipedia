@@ -25,6 +25,9 @@ class Question(BaseModel):
 @app.post("/ask")
 def ask(q: Question):
     answer = response(q.text, q.collection, q.n)
+    # `response` may return a dict {'answer': str, 'sources': [...]}
+    if isinstance(answer, dict) and 'answer' in answer:
+        return {"answer": answer.get('answer'), "sources": answer.get('sources', [])}
     return {"answer": answer}
 
 # uvicorn test_civi_api:app --reload
