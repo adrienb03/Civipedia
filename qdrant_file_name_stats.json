@@ -1,0 +1,37 @@
+{
+  "total_points": 11,
+  "distinct_file_names": 2,
+  "top": [
+    [
+      "279007.pdf",
+      7
+    ],
+    [
+      "_Enjeux_sociaux_duchangement_climatique_IGAS__1752809109.pdf",
+      3
+    ],
+    [
+      "__MISSING__",
+      1
+    ]
+  ],
+  "examples": {
+    "_Enjeux_sociaux_duchangement_climatique_IGAS__1752809109.pdf": [
+      "009bf5da-2438-44d5-8463-995e3879184c",
+      "027e2b90-6b7e-4dc5-8968-4c78a3579f34",
+      "02f93664-adfa-4b12-a0b6-be4e1373fa03"
+    ],
+    "279007.pdf": [
+      "01117073-a2bd-4136-8ab6-72905015378a",
+      "0184eb49-d348-4f5d-893f-df157a43a15b",
+      "019ab779-3f6b-4d26-a658-46646cbd150e",
+      "01c9c4c5-3899-4d57-86cc-a8757d333e65",
+      "02b0bc46-e217-480d-9290-1778292fae9e",
+      "02fdcba0-04f4-482e-add9-36bf1ab9dbda",
+      "03177ea4-f2ff-4705-9e95-19addc89aa8e"
+    ],
+    "__MISSING__": [
+      "None"
+    ]
+  }
+}

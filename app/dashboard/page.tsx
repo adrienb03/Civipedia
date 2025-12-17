@@ -37,9 +37,9 @@ export default function Dashboard() {
       const res = await fetch("http://127.0.0.1:8000/ask", {  // <- ton backend FastAPI
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+          body: JSON.stringify({
           text: query,        // le texte de la question
-          collection: "knowledge_base_civipedia", // nom de la collection Qdrant
+          collection: "Base_de_connaissance", // nom de la collection Qdrant
           n: 1                // nombre de réponses
         }),
       });

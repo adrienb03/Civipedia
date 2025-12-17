@@ -48,7 +48,7 @@ qdrant_client = get_qdrant_client()
 api_key_mistral = "kNHnuIR8MYfrrWUG3FP8Hl13QH0jFUMF"
 llm = OpenAILike(  model="mistral-large-latest",api_base="https://api.mistral.ai/v1",api_key=api_key_mistral,is_chat_model=True, )
 
-collection_name = "knowledge_base_civipedia"
+collection_name = "Base_de_connaissance"
 model_name = "BAAI/bge-base-en-v1.5"
 
 def preselect(prompt,collection,n_limit) :
@@ -139,7 +139,13 @@ def response(prompt,collection,n_lim) :
 
     return {'answer': answer_text, 'sources': sources}
 
-question = "le titre du document"
-print(response(question,collection_name,2))
+if __name__ == "__main__":
+    # Demo / quick test when running this module directly.
+    question = "le titre du document"
+    try:
+        print(response(question, collection_name, 2))
+    except Exception as e:
+        # Avoid raising on import time (uvicorn/fastapi imports this module).
+        print("Demo failed (collection may not exist or Qdrant unreachable):", e)
 
 ''' Lier le code au front-end via fastapi '''

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         const resp = await fetch(process.env.PYTHON_API_URL ?? 'http://127.0.0.1:8000/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: query, collection: 'knowledge_base_civipedia', n: 2 }),
+          body: JSON.stringify({ text: query, collection: 'Base_de_connaissance', n: 2 }),
         })
         if (resp.ok) {
           const data = await resp.json()
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       const resp = await fetch(process.env.PYTHON_API_URL ?? 'http://127.0.0.1:8000/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: query, collection: 'knowledge_base_civipedia', n: 2 }),
+        body: JSON.stringify({ text: query, collection: 'Base_de_connaissance', n: 2 }),
       })
       if (resp.ok) {
         const data = await resp.json()
